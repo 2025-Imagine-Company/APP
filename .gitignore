@@ -1,48 +1,36 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
-**/doc/api/
-**/ios/Flutter/.last_build_id
-.dart_tool/
+# Flutter/Dart 빌드 캐시와 결과물
+.dart_tool/             # Flutter/Dart 빌드 캐시
+.build/                 # 임시 빌드 디렉토리
+build/                  # 빌드 결과물
+.flutter-plugins        # 플러그인 정보 (자동 생성)
 .flutter-plugins-dependencies
-.pub-cache/
-.pub/
-/build/
-/coverage/
+.pub-cache/             # pub 전역 캐시
+.pub/                   # pub 로컬 캐시
 
-# Symbolication related
-app.*.symbols
+# IDE/에디터 설정 파일
+.idea/                  # Android Studio / IntelliJ 설정
+.vscode/                # VSCode 설정
+*.iml                   # IntelliJ 프로젝트 파일
 
-# Obfuscation related
-app.*.map.json
+# Android 관련
+android/.gradle/        # Gradle 캐시
+android/local.properties # SDK 경로 등 로컬 전용 설정
+android/app/build/      # 안드로이드 빌드 결과물
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# iOS 관련
+ios/Pods/               # CocoaPods 라이브러리
+ios/.symlinks/          # 심볼릭 링크
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Runner.xcworkspace/ # Xcode 워크스페이스 (자동 생성)
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcuserdata/ # 사용자별 Xcode 데이터
 
-# 환경변수
-.env
+# Desktop 관련 (Windows/macOS/Linux 빌드 결과물)
+windows/
+macos/
+linux/
+
+# 환경 변수 및 로컬 메타데이터
+.env                    # 환경 변수 파일 (API 키 등)
+.metadata               # Flutter SDK/채널 정보 (로컬 환경 전용)
