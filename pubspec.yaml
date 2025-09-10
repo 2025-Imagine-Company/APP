@@ -1,0 +1,26 @@
+name: APP
+description: "Audion Project."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  record: ^6.1.1
+  audioplayers: ^6.5.0
+  dio: ^5.9.0
+  flutter_secure_storage: ^9.2.4
+  flutter_dotenv: ^6.0.0
+  reown_appkit: ^1.2.10
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true

@@ -1,0 +1,64 @@
+# Flutter/Dart 빌드 캐시와 결과물
+.dart_tool/             # Flutter/Dart 빌드 캐시
+.build/                 # 임시 빌드 디렉토리
+build/                  # 빌드 결과물
+.flutter-plugins        # 플러그인 정보 (자동 생성)
+.flutter-plugins-dependencies
+.pub-cache/             # pub 전역 캐시
+.pub/                   # pub 로컬 캐시
+
+# IDE/에디터 설정 파일
+.idea/                  # Android Studio / IntelliJ 설정
+.vscode/                # VSCode 설정
+*.iml                   # IntelliJ 프로젝트 파일
+
+# Android 관련
+android/.gradle/        # Gradle 캐시
+android/local.properties # SDK 경로 등 로컬 전용 설정
+android/app/build/      # 안드로이드 빌드 결과물
+
+# iOS 관련
+ios/Pods/               # CocoaPods 라이브러리
+ios/.symlinks/          # 심볼릭 링크
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Runner.xcworkspace/ # Xcode 워크스페이스 (자동 생성)
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcuserdata/ # 사용자별 Xcode 데이터
+
+# Desktop 관련 (Windows/macOS/Linux 빌드 결과물)
+windows/
+macos/
+linux/
+
+# 환경 변수 및 로컬 메타데이터
+.env                    # 환경 변수 파일 (API 키 등)
+.metadata               # Flutter SDK/채널 정보 (로컬 환경 전용)
+
+# Dart/Flutter 패키지 의존성
+.packages               # pubspec.lock과 함께 자동 생성됨
+
+# Xcode 관련 캐시 및 사용자 설정
+ios/Runner.xcodeproj/xcuserdata/
+ios/Runner.xcodeproj/project.xcworkspace/
+ios/Runner.xcodeproj/xcshareddata/
+ios/Runner.xcodeproj/xcdebugger/
+
+# Android Studio/IntelliJ 캐시
+*.ipr
+*.iws
+.gradle/
+captures/               # Android Studio 스크린샷/캡처 저장 폴더
+
+# Xcode 빌드 산출물
+DerivedData/
+*.xcuserstate
+*.xcworkspace
+*.xccheckout
+*.xcscmblueprint
+
+# 기타 OS/도구 캐시
+.DS_Store               # macOS
+Thumbs.db               # Windows
+*.log                   # 로그 파일
+*.lock                  # 잠금 파일 (예: yarn.lock은 제외 시 주의)
