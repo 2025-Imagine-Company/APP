@@ -43,10 +43,7 @@ APP/
 │   │       ├─ domain/
 │   │       └─ presentation/
 │   │
-│   ├─ models/             # 데이터 모델 정의 (도메인 모델 포함)
-│   ├─ providers/          # 상태 관리 (Provider/BLoC)
-│   ├─ screens/            # 화면 단위 UI 구성
-│   └─ widgets/            # 공용 UI 위젯들
+│   └─ screens/            # 화면 단위 UI 구성 
 │
 ├─ test/                   # 단위 테스트 코드
 ├─ pubspec.yaml            # 의존성 정의
