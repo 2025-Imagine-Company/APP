@@ -1,64 +1,85 @@
-# Flutter/Dart 빌드 캐시와 결과물
-.dart_tool/             # Flutter/Dart 빌드 캐시
-.build/                 # 임시 빌드 디렉토리
-build/                  # 빌드 결과물
-.flutter-plugins        # 플러그인 정보 (자동 생성)
+# Flutter / Dart
+.dart_tool/
+.build/
+build/
+.flutter-plugins
 .flutter-plugins-dependencies
-.pub-cache/             # pub 전역 캐시
-.pub/                   # pub 로컬 캐시
+.fvm/
+.packages
+.pub-cache/
+.pub/
+coverage/
+lib/generated_plugin_registrant.dart
+# pubspec.lock   # 앱 프로젝트는 유지, 패키지 라이브러리는 제외
 
-# IDE/에디터 설정 파일
-.idea/                  # Android Studio / IntelliJ 설정
-.vscode/                # VSCode 설정
-*.iml                   # IntelliJ 프로젝트 파일
+# IDE / Editor
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.gradle/
+captures/
 
-# Android 관련
-android/.gradle/        # Gradle 캐시
-android/local.properties # SDK 경로 등 로컬 전용 설정
-android/app/build/      # 안드로이드 빌드 결과물
+# Android
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/key.properties
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+android/app/build/
 
-# iOS 관련
-ios/Pods/               # CocoaPods 라이브러리
-ios/.symlinks/          # 심볼릭 링크
+# iOS / Xcode
+ios/Pods/
+ios/.symlinks/
+ios/.generated/
+ios/Flutter/.last_build_id
+ios/Flutter/App.framework
 ios/Flutter/Flutter.framework
 ios/Flutter/Flutter.podspec
-ios/Runner.xcworkspace/ # Xcode 워크스페이스 (자동 생성)
-ios/Runner.xcodeproj/project.xcworkspace/
-ios/Runner.xcodeproj/xcuserdata/ # 사용자별 Xcode 데이터
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/Runner.xcworkspace/
+**/ios/Runner.xcodeproj/project.xcworkspace/
+**/ios/Runner.xcodeproj/xcuserdata/
+**/ios/Runner.xcodeproj/xcshareddata/
+**/ios/Runner.xcodeproj/xcdebugger/
 
-# Desktop 관련 (Windows/macOS/Linux 빌드 결과물)
+# Desktop
 windows/
 macos/
 linux/
 
-# 환경 변수 및 로컬 메타데이터
-.env                    # 환경 변수 파일 (API 키 등)
-.metadata               # Flutter SDK/채널 정보 (로컬 환경 전용)
+# Environment / Metadata
+.env
+.metadata
 
-# Dart/Flutter 패키지 의존성
-.packages               # pubspec.lock과 함께 자동 생성됨
-
-# Xcode 관련 캐시 및 사용자 설정
-ios/Runner.xcodeproj/xcuserdata/
-ios/Runner.xcodeproj/project.xcworkspace/
-ios/Runner.xcodeproj/xcshareddata/
-ios/Runner.xcodeproj/xcdebugger/
-
-# Android Studio/IntelliJ 캐시
-*.ipr
-*.iws
-.gradle/
-captures/               # Android Studio 스크린샷/캡처 저장 폴더
-
-# Xcode 빌드 산출물
+# Xcode Build
 DerivedData/
 *.xcuserstate
 *.xcworkspace
 *.xccheckout
 *.xcscmblueprint
 
-# 기타 OS/도구 캐시
-.DS_Store               # macOS
-Thumbs.db               # Windows
-*.log                   # 로그 파일
-*.lock                  # 잠금 파일 (예: yarn.lock은 제외 시 주의)
+# OS / Misc
+.DS_Store
+Thumbs.db
+*.log
