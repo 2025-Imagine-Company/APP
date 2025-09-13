@@ -14,8 +14,8 @@ APP/
 ├─ ios/                   # iOS 네이티브 코드
 ├─ lib/                   # Flutter 앱 핵심 소스코드
 │   ├─ core/              # 공통 기능 (모든 도메인에서 재사용)
-│   │   ├─ constants/      # 앱 전역 상수
-│   │   ├─ utils/          # 유틸리티 함수
+│   │   ├─ constants/      # 앱 전역 상수 (API 엔드포인트, 공통 문자열 키)
+│   │   ├─ utils/          # 유틸리티 함수 (날짜/시간 포맷터, 이메일, 비밀번호 체크)
 │   │   ├─ services/       # 공통 서비스 (API, 네트워크 등)
 │   │   ├─ themes/         # 앱 테마, 스타일
 │   │   ├─ errors/         # 오류 처리 관련 코드
@@ -52,19 +52,3 @@ APP/
 
 ```
 ---
-
-## 🚀 실행 방법
-MacOS 버전
-
-### 1. 레포지토리 클론
-```bash
-git clone https://github.com/2025-Imagine-Company/APP.git
-cd audion/APP
-
-### 2. 패키지 클린 설치 스크립트
-```bash
-sh setup.sh
-
-
-### 3. 앱 실행
-flutter run
