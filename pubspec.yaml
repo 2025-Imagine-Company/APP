@@ -1,4 +1,4 @@
-name: APP
+name: app
 description: "Audion Project."
 publish_to: 'none'
 
@@ -24,3 +24,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/images/
+    - assets/icons/
