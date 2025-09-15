@@ -3,6 +3,8 @@ import 'screens/splash_screen.dart';
 import 'screens/intro_screen.dart';
 import 'features/authentication/presentation/login_screen.dart';
 import 'features/authentication/presentation/select_wallet_screen.dart';
+import 'features/authentication/presentation/connect_wallet_screen.dart';
+import 'features/authentication/presentation/connect_success_screen.dart';
 // import 'features/record/presentation/record_screen.dart'
 
 void main() {
@@ -26,7 +28,8 @@ class AudionApp extends StatelessWidget {
         '/intro': (context) => const IntroScreen(),
         '/login': (context) => const LoginScreen(),
         '/selectWallet': (context) => const WalletSelectScreen(),
-
+        '/connectWallet': (context) => const WalletConnectingScreen(),
+        '/successConnect': (context) => const WalletConnectedScreen(),
         // '/record': (context) => const RecordScreen(),
       },
     );
