@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum WalletProvider { metamask, walletConnect }
+// enum WalletProvider { metamask, walletConnect }
 
 class WalletSelectScreen extends StatelessWidget {
   const WalletSelectScreen({super.key});
@@ -9,9 +9,7 @@ class WalletSelectScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: const Text(
-              'Connect Your Wallet'
-          )
+        title: const Text('Select Your Wallet'),
       ),
       body: SafeArea(
         child: Padding(
@@ -30,7 +28,7 @@ class WalletSelectScreen extends StatelessWidget {
                         textAlign: TextAlign.center
                     ),
                     const SizedBox(
-                        height: 28
+                        height: 110
                     ),
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -38,7 +36,7 @@ class WalletSelectScreen extends StatelessWidget {
                         _WalletButton(
                           label: 'MetaMask',
                           assetPath: 'assets/images/metamask_logo.png',
-                          onTap: () => Navigator.pop(context, WalletProvider.metamask)
+                          onTap: () => Navigator.pushReplacementNamed(context, '/connectWallet'),
                         ),
                         const SizedBox(
                             width: 24
@@ -46,22 +44,16 @@ class WalletSelectScreen extends StatelessWidget {
                         _WalletButton(
                           label: 'WalletConnect',
                           assetPath: 'assets/images/walletconnect_logo.png',
-                          onTap: () => Navigator.pop(
-                              context,
-                              WalletProvider.walletConnect
-                          )
+                          onTap: () => Navigator.pushReplacementNamed(context, '/connectWallet'),
                         ),
                       ],
+                    ),
+                    const SizedBox(
+                        height: 150
                     ),
                   ],
                 ),
               ),
-            ),
-            TextButton(
-                onPressed: () {},
-                child: const Text(
-                    '지갑이 없으신가요? 지갑 만들기'
-                )
             ),
             const SizedBox(
                 height: 12
