@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'features/user_profile/presentation/mypage_screen.dart';
 import 'screens/splash_screen.dart';
 import 'screens/intro_screen.dart';
 import 'features/authentication/presentation/login_screen.dart';
@@ -14,6 +15,7 @@ void main() {
 class AudionApp extends StatelessWidget {
   const AudionApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,13 +26,14 @@ class AudionApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),
+        '/': (context) => const MypageScreen(),
         '/intro': (context) => const IntroScreen(),
         '/login': (context) => const LoginScreen(),
         '/selectWallet': (context) => const WalletSelectScreen(),
         '/connectWallet': (context) => const WalletConnectingScreen(),
         '/successConnect': (context) => const WalletConnectedScreen(),
         // '/record': (context) => const RecordScreen(),
+        '/myPage': (context) => const MypageScreen(),
       },
     );
   }
