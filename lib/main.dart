@@ -26,7 +26,7 @@ class AudionApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const SplashScreen(),
+        '/': (context) => const MypageScreen(),
         '/intro': (context) => const IntroScreen(),
         '/login': (context) => const LoginScreen(),
         '/selectWallet': (context) => const WalletSelectScreen(),

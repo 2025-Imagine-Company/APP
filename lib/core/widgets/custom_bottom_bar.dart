@@ -6,7 +6,9 @@ class CustomBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color(0xFFE9E9E9),
+      decoration: const BoxDecoration(
+        color: Colors.transparent,
+      ),
       width: 351,
       height: 69,
       child: Padding(
