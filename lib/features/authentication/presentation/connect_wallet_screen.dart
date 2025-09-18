@@ -28,10 +28,10 @@ class _WalletConnectingScreenState extends State<WalletConnectingScreen>
     Navigator.pushReplacementNamed(context, '/successConnect');
   }
 
-  void _goSelectWallet() {
-    // TODO: 진행 중 연결이 있다면 취소 처리
-    Navigator.pushReplacementNamed(context, '/selectWallet');
-  }
+  // void _goSelectWallet() {
+  //   // TODO: 진행 중 연결이 있다면 취소 처리
+  //   Navigator.pushReplacementNamed(context, '/selectWallet');
+  // }
 
   @override
   Widget build(BuildContext context) {

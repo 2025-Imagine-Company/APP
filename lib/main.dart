@@ -6,7 +6,8 @@ import 'features/authentication/presentation/login_screen.dart';
 import 'features/authentication/presentation/select_wallet_screen.dart';
 import 'features/authentication/presentation/connect_wallet_screen.dart';
 import 'features/authentication/presentation/connect_success_screen.dart';
-// import 'features/record/presentation/record_screen.dart'
+import 'features/record/presentation/record_home_screen.dart';
+import 'features/record/presentation/record_warning_screen.dart';
 
 void main() {
   runApp(const AudionApp());
@@ -15,7 +16,6 @@ void main() {
 class AudionApp extends StatelessWidget {
   const AudionApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,7 +32,7 @@ class AudionApp extends StatelessWidget {
         '/selectWallet': (context) => const WalletSelectScreen(),
         '/connectWallet': (context) => const WalletConnectingScreen(),
         '/successConnect': (context) => const WalletConnectedScreen(),
-        // '/record': (context) => const RecordScreen(),
+        '/record': (context) => const RecordHomeScreen(),
         '/myPage': (context) => const MypageScreen(),
       },
     );
