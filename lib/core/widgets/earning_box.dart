@@ -26,6 +26,10 @@ class EarningBox extends StatelessWidget {
     final subText = bright == Brightness.dark ? Colors.white70 : Colors.black54;
     final chipBg = bright == Brightness.dark ? Colors.white24 : Colors.black12;
 
+    final amountColor = backgroundColor == Colors.red ? Colors.white : const Color(0xFFE53935);
+
+
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -43,8 +47,8 @@ class EarningBox extends StatelessWidget {
           child: Row(
             children: [
               SizedBox(
-                width: double.infinity,
-                height: 70,                 // ← 정사각 고정
+                width: 72,
+                height: 56,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Image.asset(imageAsset, fit: BoxFit.cover),
@@ -66,7 +70,7 @@ class EarningBox extends StatelessWidget {
                       children: [
                         Text(
                           '+ ${_fmt(amount)} \$',
-                          style: const TextStyle(color: Color(0xFFE53935), fontSize: 12, fontWeight: FontWeight.w700),
+                          style: TextStyle(color: amountColor, fontSize: 12, fontWeight: FontWeight.w700),
                         ),
                         const Spacer(),
                         Text('${rate.toStringAsFixed(1)}%', style: TextStyle(color: subText, fontSize: 12)),
@@ -90,6 +94,7 @@ class EarningBox extends StatelessWidget {
     );
   }
 
+  //오늘의 수익 박스 숫자 ,로 나눠주기
   static String _fmt(int n) {
     final s = n.toString();
     final buf = StringBuffer();

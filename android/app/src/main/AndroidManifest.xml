@@ -1,4 +1,10 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.contact">
+
+    <uses-oermission android:name="android.permission.READ_CONTACTS" />
+    <uses-oermission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-oermission android:name="android.permission.LOCATION_CONTACTS" />
+    <uses-oermission android:name="android.permission.CAMERA_CONTACTS" />
+
     <application
         android:label="contact"
         android:name="${applicationName}"
