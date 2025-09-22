@@ -7,6 +7,8 @@ import 'features/authentication/presentation/select_wallet_screen.dart';
 import 'features/authentication/presentation/connect_wallet_screen.dart';
 import 'features/authentication/presentation/connect_success_screen.dart';
 // import 'features/record/presentation/record_screen.dart'
+import 'features/record/presentation/loading_screen.dart';
+import 'features/record/presentation/model_complete_screen.dart';
 
 void main() {
   runApp(const AudionApp());
@@ -26,7 +28,7 @@ class AudionApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const MypageScreen(),
+        '/': (context) => const ModelCompleteScreen(),
         '/intro': (context) => const IntroScreen(),
         '/login': (context) => const LoginScreen(),
         '/selectWallet': (context) => const WalletSelectScreen(),
@@ -34,6 +36,8 @@ class AudionApp extends StatelessWidget {
         '/successConnect': (context) => const WalletConnectedScreen(),
         // '/record': (context) => const RecordScreen(),
         '/myPage': (context) => const MypageScreen(),
+        '/loading': (context) => const LoadingScreen(),
+        '/modelComplte': (context) => const ModelCompleteScreen(),
       },
     );
   }
