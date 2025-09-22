@@ -10,6 +10,8 @@ import 'features/record/presentation/record_home_screen.dart';
 import 'features/record/presentation/record_warning_screen.dart';
 import 'features/record/presentation/record_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'features/record/presentation/loading_screen.dart';
+import 'features/record/presentation/model_complete_screen.dart';
 
 void main() {
   runApp(const AudionApp());
@@ -18,6 +20,7 @@ void main() {
 class AudionApp extends StatelessWidget {
   const AudionApp({super.key});
 
+  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,13 +28,7 @@ class AudionApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
         scaffoldBackgroundColor: const Color(0xFFE9E9E9), // 전역 배경
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Color(0xFFE9E9E9), // 앱바 배경 통일
-          elevation: 0,
-          foregroundColor: Colors.black,       // 아이콘/텍스트 색
-        ),
       ),
-
       initialRoute: '/',
       routes: {
         '/': (context) => const RecordHomeScreen(),
@@ -45,6 +42,8 @@ class AudionApp extends StatelessWidget {
         '/recordWarning': (context) => const RecordWarningScreen(),
         '/recording': (context) => const RecordScreen(),
         '/myPage': (context) => const MypageScreen(),
+        '/loading': (context) => const LoadingScreen(),
+        '/modelComplte': (context) => const ModelCompleteScreen(),
       },
     );
   }
