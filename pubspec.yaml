@@ -15,7 +15,9 @@ dependencies:
   audioplayers: ^6.5.0
   dio: ^5.9.0
   flutter_secure_storage: ^9.2.4
+  flutter_bloc: ^9.0.0
   flutter_dotenv: ^6.0.0
+  equatable: ^2.0.5
   reown_appkit: ^1.2.10
   percent_indicator: ^4.2.3
   permission_handler: ^8.3.0
