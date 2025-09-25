@@ -5,6 +5,8 @@ class CustomBottomBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final currentRoute = ModalRoute.of(context)?.settings.name;
+
     return Container(
       decoration: const BoxDecoration(color: Colors.transparent),
       width: 351,
@@ -21,15 +23,23 @@ class CustomBottomBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               IconButton(
-                icon: Icon(Icons.home_filled, color: Colors.black, size: 24),
+                icon: Icon(
+                    Icons.home_filled,
+                    color: currentRoute == '/recordHome' ? Color(0xFFFF2424) : Colors.black,
+                    size: 24
+                ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/myPage');
+                  Navigator.pushNamed(context, '/recordHome');
                 },
               ),
               IconButton(
-                icon: Icon(Icons.mic, color: Colors.black, size: 26,),
+                icon: Icon(
+                  Icons.mic,
+                  color: currentRoute == '/recordWarning' ? Color(0xFFFF2424) : Colors.black,
+                  size: 26,
+                ),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/myPage');
+                  Navigator.pushNamed(context, '/recordWarning');
                 },
               ),
               IconButton(
@@ -38,7 +48,7 @@ class CustomBottomBar extends StatelessWidget {
                 constraints: BoxConstraints(), // 크기 제한 제거
                 icon: CircleAvatar(
                   radius: 14,
-                  backgroundColor: Color(0xFFFF2424),
+                  backgroundColor: currentRoute == '/myPage' ? Color(0xFFFF2424) : Colors.black,
                   child: const Icon(
                     Icons.currency_bitcoin_outlined,
                     color: Color(0xFFD9D9D9),
@@ -49,9 +59,12 @@ class CustomBottomBar extends StatelessWidget {
                 },
               ),
               IconButton(
-                icon: Icon(Icons.settings, color: Colors.black, size: 26),
+                icon: Icon(
+                    Icons.settings,
+                    color: currentRoute == '/' ? Color(0xFFFF2424) : Colors.black,
+                    size: 26),
                 onPressed: () {
-                  Navigator.pushNamed(context, '/myPage');
+                  Navigator.pushNamed(context, '/');
                 },
               ),
             ],
