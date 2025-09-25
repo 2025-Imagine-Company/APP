@@ -12,6 +12,9 @@ import 'features/record/presentation/record_screen.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'features/record/presentation/loading_screen.dart';
 import 'features/record/presentation/model_complete_screen.dart';
+// import 'features/record/presentation/record_screen.dart'
+import 'features/record/presentation/loading_screen.dart';
+import 'features/record/presentation/model_complete_screen.dart';
 
 void main() {
   runApp(const AudionApp());
@@ -31,7 +34,7 @@ class AudionApp extends StatelessWidget {
       ),
       initialRoute: '/',
       routes: {
-        '/': (context) => const RecordHomeScreen(),
+        '/': (context) => const ModelCompleteScreen(),
         '/splash': (context) => const SplashScreen(),
         '/intro': (context) => const IntroScreen(),
         '/login': (context) => const LoginScreen(),
