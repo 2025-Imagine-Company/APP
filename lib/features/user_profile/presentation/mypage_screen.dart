@@ -14,15 +14,14 @@ class _MypageScreenState extends State<MypageScreen> {
     return Scaffold(
       extendBody: true,
       appBar: AppBar(
-        backgroundColor: const Color(0xFFE9E9E9),
+        automaticallyImplyLeading: false,
         centerTitle: false,
-        elevation: 0,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             Text(
               'MY PAGE',
-              style: TextStyle(fontSize: 14, color: Color(0x80000000)),
+              style: TextStyle(fontSize: 14),
             ),
             Text(
               '마이페이지',

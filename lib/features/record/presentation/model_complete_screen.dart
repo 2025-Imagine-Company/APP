@@ -34,7 +34,9 @@ class _ModelCompleteScreenState extends State<ModelCompleteScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 fixedSize: Size(256, 44),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/myPage');
+              },
               child: Text(
                 "모델 테스트 하기",
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -51,7 +53,9 @@ class _ModelCompleteScreenState extends State<ModelCompleteScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 fixedSize: Size(256, 44),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.pushReplacementNamed(context, '/myPage');
+              },
               child: Text("판매 등록하러 가기", style: TextStyle(fontSize: 16)),
             ),
             SizedBox(height: 10),
