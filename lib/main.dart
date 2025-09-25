@@ -43,7 +43,7 @@ class AudionApp extends StatelessWidget {
         '/recording': (context) => const RecordScreen(),
         '/myPage': (context) => const MypageScreen(),
         '/loading': (context) => const LoadingScreen(),
-        '/modelComplte': (context) => const ModelCompleteScreen(),
+        '/modelComplete': (context) => const ModelCompleteScreen(),
       },
     );
   }
