@@ -6,9 +6,7 @@ class CustomBottomBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
-        color: Colors.transparent,
-      ),
+      decoration: const BoxDecoration(color: Colors.transparent),
       width: 351,
       height: 69,
       child: Padding(
@@ -22,14 +20,40 @@ class CustomBottomBar extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              Icon(Icons.home_filled, color: Colors.black, size: 24,),
-              Icon(Icons.mic, color: Colors.black, size: 26,),
-              CircleAvatar(
-                  radius: 15,
-                  backgroundColor: Color(0xFFFF2424),
-                  child: const Icon(Icons.currency_bitcoin_outlined,color: Color(0xFFD9D9D9),)
+              IconButton(
+                icon: Icon(Icons.home_filled, color: Colors.black, size: 24),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/myPage');
+                },
               ),
-              Icon(Icons.settings, color: Colors.black, size: 26,)
+              IconButton(
+                icon: Icon(Icons.mic, color: Colors.black, size: 26,),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/myPage');
+                },
+              ),
+              IconButton(
+                iconSize: 24, // 아이콘 자체 크기
+                padding: EdgeInsets.zero, // 패딩 제거
+                constraints: BoxConstraints(), // 크기 제한 제거
+                icon: CircleAvatar(
+                  radius: 14,
+                  backgroundColor: Color(0xFFFF2424),
+                  child: const Icon(
+                    Icons.currency_bitcoin_outlined,
+                    color: Color(0xFFD9D9D9),
+                  ),
+                ),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/myPage');
+                },
+              ),
+              IconButton(
+                icon: Icon(Icons.settings, color: Colors.black, size: 26),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/myPage');
+                },
+              ),
             ],
           ),
         ),
