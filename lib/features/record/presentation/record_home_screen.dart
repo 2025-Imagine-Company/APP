@@ -1,70 +1,64 @@
 // lib/features/record/presentation/record_home_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../authentication/presentation/authentication_bloc.dart';
 import '../../../../core/widgets/earning_box.dart';
 import '../../../../core/widgets/custom_bottom_bar.dart';
 
 class RecordHomeScreen extends StatelessWidget {
-  const RecordHomeScreen({super.key, this.nickname = _mockNickname});
+  const RecordHomeScreen({super.key, this.nickname});
 
-  final String nickname;
+  final String? nickname;
 
-  static const _mockNickname = 'Sally';
+  static const _fallbackMockNickname = 'Sally';
   static const _mock = [
-    {
-      'title': 'case1_low_girl',
-      'amount': 232234,
-      'rate': 2.8,
-      'image': 'assets/images/earning_mock1.png'
-    },
-    {
-      'title': '어린아이 목소리 v.2',
-      'amount': 232234,
-      'rate': 2.8,
-      'image': 'assets/images/earning_mock2.png'
-    },
+    {'title': 'case1_low_girl','amount': 232234,'rate': 2.8,'image': 'assets/images/earning_mock1.png'},
+    {'title': '어린아이 목소리 v.2','amount': 232234,'rate': 2.8,'image': 'assets/images/earning_mock2.png'},
   ];
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthenticationBloc>().state;
+
+    // 1) 명시 전달 > 2) 서버 닉네임 > 3) 지갑주소 축약 > 4) mock
+    final derived =
+        nickname ??
+            _nickFromAuth(authState) ??
+            _shortAddr(authState.me?.nickname) ??
+            _fallbackMockNickname;
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _HeaderSection(nickname: nickname),
-              const _HeroImage(
-                  imagePath: 'assets/images/record_home.png', width: 300),
+              _HeaderSection(nickname: derived),
+              const _HeroImage(imagePath: 'assets/images/record_home.png', width: 300),
               _EarningsSection(items: _mock),
             ],
           ),
         ),
       ),
-      bottomNavigationBar: CustomBottomBar(
-        // currentIndex: 0,
-        // onTap: (i) {
-        //   switch (i) {
-        //     case 1:
-        //       // Navigator.pushNamed(context, '/record');
-        //       break;
-        //     case 2:
-        //       Navigator.pushNamed(context, '/earnings');
-        //       break;
-        //     case 3:
-        //       Navigator.pushNamed(context, '/settings');
-        //       break;
-        //     default:
-        //       break;
-        // }
-        // }
-      ),
+      bottomNavigationBar: const CustomBottomBar(),
     );
+  }
+
+  String? _nickFromAuth(AuthState s) {
+    // 서버가 닉네임을 제공한다면 여기에 매핑
+    // 예: return s.me?.nickname;
+    return null;
+  }
+
+  String? _shortAddr(String? addr) {
+    if (addr == null || addr.length < 10) return addr;
+    final a = addr.toLowerCase();
+    return '${a.substring(0, 6)}...${a.substring(a.length - 4)}';
   }
 }
 
 class _HeaderSection extends StatelessWidget {
   const _HeaderSection({required this.nickname});
-
   final String nickname;
 
   @override
@@ -73,8 +67,7 @@ class _HeaderSection extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
         const SizedBox(height: 20),
-        const Text(
-            'home', style: TextStyle(color: Colors.black45, fontSize: 20)),
+        const Text('home', style: TextStyle(color: Colors.black45, fontSize: 20)),
         Text('안녕하세요,\n$nickname님!',
             style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
         const SizedBox(height: 16),
@@ -82,8 +75,7 @@ class _HeaderSection extends StatelessWidget {
           alignment: Alignment.centerLeft,
           child: ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              foregroundColor: Colors.white,
+              backgroundColor: Colors.red, foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               shape: const StadiumBorder(),
             ),
