@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:app/core/services/wallet_kit_service.dart';
 
 // enum WalletProvider { metamask, walletConnect }
 
@@ -36,7 +37,23 @@ class WalletSelectScreen extends StatelessWidget {
                         _WalletButton(
                           label: 'MetaMask',
                           assetPath: 'assets/images/metamask_logo.png',
-                          onTap: () => Navigator.pushReplacementNamed(context, '/connectWallet'),
+                          onTap: () {
+                            WalletKitService.instance.connectAndPersonalSign(
+                              context: context,
+                              message: 'Login to Audion',
+                              onSuccess: () {
+                                if (!context.mounted) return;
+                                Navigator.pushReplacementNamed(context, '/successConnect');
+                              },
+                              onFailure: (e) {
+                                if (!context.mounted) return;
+                                // 실패해도 선택 화면 유지
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('지갑 연결/서명에 실패했습니다. 다시 시도해주세요.')),
+                                );
+                              },
+                            );
+                          },
                         ),
                         const SizedBox(
                             width: 24

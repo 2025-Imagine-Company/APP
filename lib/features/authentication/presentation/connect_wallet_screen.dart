@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// 자동 호출 흐름은 버튼 탭 제스처로 이전하였고, 이 화면은 로딩/안내 전용으로 유지합니다.
 
 class WalletConnectingScreen extends StatefulWidget {
   const WalletConnectingScreen({super.key});
@@ -15,6 +16,8 @@ class _WalletConnectingScreenState extends State<WalletConnectingScreen>
     super.initState();
     _ctrl = AnimationController(vsync: this, duration: const Duration(seconds: 3))
       ..repeat();
+    // 화면 진입 시 자동으로 연결 및 서명 트리거
+    // 자동 연결 호출 제거
   }
 
   @override
