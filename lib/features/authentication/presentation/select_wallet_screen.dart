@@ -2,11 +2,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
 import '../../../core/constants/dev_wallets.dart';
 import 'authentication_bloc.dart';
 
-class WalletSelectScreen extends StatelessWidget {
+class WalletSelectScreen extends StatefulWidget {
   const WalletSelectScreen({super.key});
+
+  @override
+  State<WalletSelectScreen> createState() => _WalletSelectScreenState();
+}
+
+class _WalletSelectScreenState extends State<WalletSelectScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // 화면 진입 시 이전 로그인 상태/토큰 초기화
+    context.read<AuthenticationBloc>().add(const LogoutRequested());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +27,8 @@ class WalletSelectScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Select Your Wallet')),
       body: SafeArea(
         child: BlocConsumer<AuthenticationBloc, AuthState>(
+          // 상태가 바뀔 때만 listener 실행
+          listenWhen: (prev, curr) => prev.status != curr.status,
           listener: (ctx, s) {
             if (s.status == AuthStatus.failure) {
               ScaffoldMessenger.of(ctx).showSnackBar(
@@ -29,7 +44,7 @@ class WalletSelectScreen extends StatelessWidget {
             return Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,      // ← 세로 중앙
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Text(
                     '로그인 할 지갑을 선택 해 주세요',
@@ -38,8 +53,7 @@ class WalletSelectScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 32),
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.center,      // ← 세로 중앙
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       _WalletButton(
                         label: 'MetaMask',
@@ -55,6 +69,13 @@ class WalletSelectScreen extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
+                  if (isLoading) const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: SizedBox(
+                      width: 24, height: 24,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -65,13 +86,16 @@ class WalletSelectScreen extends StatelessWidget {
   }
 
   Future<void> _pickAndLogin(BuildContext context) async {
-    final authBloc = context.read<AuthenticationBloc>(); // await 이전에 캡처
+    // await 전에 참조 캡처하여 "don't use BuildContext across async gaps" 회피
+    final authBloc = context.read<AuthenticationBloc>();
+
     final wallet = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
       isScrollControlled: true,
-      builder: (ctx) => _DevWalletPicker(),
+      builder: (ctx) => const _DevWalletPicker(),
     );
+
     if (wallet == null) return;
     authBloc.add(LoginWithWallet(wallet.toLowerCase()));
   }
@@ -86,7 +110,7 @@ class _WalletButton extends StatelessWidget {
 
   final String label;
   final String assetPath;
-  final VoidCallback? onTap; // null이면 비활성
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -99,11 +123,8 @@ class _WalletButton extends StatelessWidget {
           child: Opacity(
             opacity: disabled ? 0.5 : 1,
             child: SizedBox(
-              width: 112,
-              height: 112,
-              child: ClipOval(
-                child: Image.asset(assetPath, fit: BoxFit.cover),
-              ),
+              width: 112, height: 112,
+              child: ClipOval(child: Image.asset(assetPath, fit: BoxFit.cover)),
             ),
           ),
         ),
@@ -115,6 +136,8 @@ class _WalletButton extends StatelessWidget {
 }
 
 class _DevWalletPicker extends StatelessWidget {
+  const _DevWalletPicker();
+
   @override
   Widget build(BuildContext context) {
     final wallets = DevWallets.list;
@@ -130,7 +153,7 @@ class _DevWalletPicker extends StatelessWidget {
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: wallets.length,
-                separatorBuilder: (_, _) => const Divider(height: 1),
+                separatorBuilder: (_, __) => const Divider(height: 1),
                 itemBuilder: (ctx, i) {
                   final w = wallets[i];
                   return ListTile(
@@ -140,7 +163,9 @@ class _DevWalletPicker extends StatelessWidget {
                       icon: const Icon(Icons.copy, size: 18),
                       onPressed: () {
                         Clipboard.setData(ClipboardData(text: w));
-                        ScaffoldMessenger.of(ctx).showSnackBar(const SnackBar(content: Text('주소 복사됨')));
+                        ScaffoldMessenger.of(ctx).showSnackBar(
+                          const SnackBar(content: Text('주소 복사됨')),
+                        );
                       },
                     ),
                     onTap: () => Navigator.pop(context, w),

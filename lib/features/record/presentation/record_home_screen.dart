@@ -11,7 +11,6 @@ class RecordHomeScreen extends StatelessWidget {
 
   final String? nickname;
 
-  static const _fallbackMockNickname = 'Sally';
   static const _mock = [
     {'title': 'case1_low_girl','amount': 232234,'rate': 2.8,'image': 'assets/images/earning_mock1.png'},
     {'title': '어린아이 목소리 v.2','amount': 232234,'rate': 2.8,'image': 'assets/images/earning_mock2.png'},
@@ -19,14 +18,8 @@ class RecordHomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final authState = context.watch<AuthenticationBloc>().state;
-
-    // 1) 명시 전달 > 2) 서버 닉네임 > 3) 지갑주소 축약 > 4) mock
-    final derived =
-        nickname ??
-            _nickFromAuth(authState) ??
-            _shortAddr(authState.me?.nickname) ??
-            _fallbackMockNickname;
+    final auth = context.watch<AuthenticationBloc>().state;
+    final derived = nickname ?? auth.me?.displayName ?? '';
 
     return Scaffold(
       body: SafeArea(
@@ -43,18 +36,6 @@ class RecordHomeScreen extends StatelessWidget {
       ),
       bottomNavigationBar: const CustomBottomBar(),
     );
-  }
-
-  String? _nickFromAuth(AuthState s) {
-    // 서버가 닉네임을 제공한다면 여기에 매핑
-    // 예: return s.me?.nickname;
-    return null;
-  }
-
-  String? _shortAddr(String? addr) {
-    if (addr == null || addr.length < 10) return addr;
-    final a = addr.toLowerCase();
-    return '${a.substring(0, 6)}...${a.substring(a.length - 4)}';
   }
 }
 
