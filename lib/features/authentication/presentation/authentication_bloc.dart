@@ -1,5 +1,5 @@
 // lib/features/authentication/presentation/authentication_bloc.dart
-import 'package:bloc/bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import '../../authentication/data/auth_repository.dart';
 import '../../authentication/domain/auth_entities.dart';

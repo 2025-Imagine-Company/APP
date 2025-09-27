@@ -120,7 +120,7 @@ class _RecordingTextScreenState extends State<RecordScreen> {
                 child: ListView.separated(
                   controller: _scroll,
                   itemCount: widget.lines.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 4),
+                  separatorBuilder: (_, _) => const SizedBox(height: 4),
                   itemBuilder: (_, i) {
                     final isCurrent = i == _idx;
                     final isPast = i < _idx;
