@@ -26,13 +26,22 @@ import 'features/record/presentation/record_screen.dart';
 import 'features/record/presentation/loading_screen.dart';
 import 'features/record/presentation/model_complete_screen.dart';
 import 'features/user_profile/presentation/minting_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   final tokenProvider = SecureTokenProvider();
+
+  final prefs = await SharedPreferences.getInstance();
+  final firstRun = prefs.getBool('first_run') ?? true;
+  if (firstRun) {
+    await tokenProvider.clear();           // ← 최초 1회 토큰 삭제
+    await prefs.setBool('first_run', false);
+  }
+
   final http = HttpClient(tokenProvider);
-  final api = AuthApi(http.raw);
+  final api  = AuthApi(http.raw);
   final repo = AuthRepository(api: api, tokenSink: _TokenSinkImpl(tokenProvider));
 
   runApp(AudionApp(repo: repo));

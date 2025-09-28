@@ -16,8 +16,8 @@ class AuthApi implements IAuthApi {
   Future<AuthToken> testLogin(String wallet) async {
     final res = await _dio.post<Map<String, dynamic>>(
       Endpoints.testLogin,
-      queryParameters: {'walletAddress': wallet.toLowerCase()}, // ← 쿼리 전송
-      options: Options(extra: {'auth': false}),                  // ← 토큰 미부착
+      queryParameters: {'walletAddress': wallet.toLowerCase()},
+      options: Options(extra: {'auth': false}), // 인터셉터가 인식하도록 아래 수정 필요
     );
     final d = res.data!;
     return AuthToken(
@@ -31,13 +31,7 @@ class AuthApi implements IAuthApi {
 
   @override
   Future<Me> me() async {
-    final res = await _dio.get<Map<String, dynamic>>(Endpoints.me); // ← Bearer 자동 부착
-    final d = res.data!;
-    return Me(
-      userId: d['userId'] as String,
-      walletAddress: d['walletAddress'] as String,
-      tokenRemainingSeconds: (d['tokenRemainingSeconds'] as num).toInt(),
-      isValid: d['isValid'] as bool,
-    );
+    final res = await _dio.get<Map<String, dynamic>>(Endpoints.me);
+    return Me.fromJson(res.data!); // ← nickname 포함 파싱
   }
 }

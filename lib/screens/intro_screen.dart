@@ -9,7 +9,7 @@ class IntroScreen extends StatelessWidget {
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            Navigator.pushReplacementNamed(context, '/login');
+            Navigator.pushReplacementNamed(context, '/selectWallet');
           },
           child: const Text('Click to get start'),
         ),
