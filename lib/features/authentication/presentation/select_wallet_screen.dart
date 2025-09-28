@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:app/core/services/wallet_kit_service.dart';
+import 'package:app/core/services/auth_api.dart';
 
 // enum WalletProvider { metamask, walletConnect }
 
@@ -37,22 +38,51 @@ class WalletSelectScreen extends StatelessWidget {
                         _WalletButton(
                           label: 'MetaMask',
                           assetPath: 'assets/images/metamask_logo.png',
-                          onTap: () {
-                            WalletKitService.instance.connectAndPersonalSign(
-                              context: context,
-                              message: 'Login to Audion',
-                              onSuccess: () {
-                                if (!context.mounted) return;
-                                Navigator.pushReplacementNamed(context, '/successConnect');
-                              },
-                              onFailure: (e) {
-                                if (!context.mounted) return;
-                                // 실패해도 선택 화면 유지
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('지갑 연결/서명에 실패했습니다. 다시 시도해주세요.')),
-                                );
-                              },
-                            );
+                          onTap: () async {
+                            try {
+                              final api = AuthApiService();
+                              // 1) 주소 확보
+                              final address = await WalletKitService.instance.requestAddress();
+                              if (address == null) {
+                                throw StateError('지갑 주소를 가져오지 못했습니다.');
+                              }
+                              // 2) 서버에서 nonce 발급
+                              final nonce = await api.fetchNonce(address);
+                              // 3) nonce로 personal_sign 수행 (연결 포함)
+                              await WalletKitService.instance.connectAndPersonalSign(
+                                context: context,
+                                message: nonce,
+                                onSuccess: () async {
+                                  try {
+                                    final signature = WalletKitService.instance.lastSignature;
+                                    if (signature == null) {
+                                      throw StateError('서명 결과가 없습니다.');
+                                    }
+                                    // 4) verify → 토큰 저장
+                                    await api.verifyAndIssueToken(address: address, signature: signature);
+                                    if (!context.mounted) return;
+                                    // 5) 마이페이지로 이동
+                                    Navigator.pushReplacementNamed(context, '/myPage');
+                                  } catch (e) {
+                                    if (!context.mounted) return;
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('로그인 실패: $e')),
+                                    );
+                                  }
+                                },
+                                onFailure: (e) {
+                                  if (!context.mounted) return;
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(content: Text('지갑 연결/서명에 실패했습니다. 다시 시도해주세요.')),
+                                  );
+                                },
+                              );
+                            } catch (e) {
+                              if (!context.mounted) return;
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('로그인 준비 실패: $e')),
+                              );
+                            }
                           },
                         ),
                         const SizedBox(

@@ -1,4 +1,5 @@
 import 'package:app/features/user_profile/presentation/minting_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'features/user_profile/presentation/mypage_screen.dart';
@@ -15,7 +16,8 @@ import 'features/record/presentation/loading_screen.dart';
 import 'features/record/presentation/model_complete_screen.dart';
 import 'core/themes/theme.dart';
 
-void main() {
+Future<void> main() async {
+  await dotenv.load(fileName: '.env');
   runApp(const AudionApp());
 }
 

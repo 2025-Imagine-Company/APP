@@ -1,14 +1,31 @@
 import 'package:flutter/material.dart';
 
-class WalletConnectedScreen extends StatelessWidget {
+class WalletConnectedScreen extends StatefulWidget {
   const WalletConnectedScreen({
     super.key,
     this.bottomImagePath = 'assets/images/red_block.png', // <- 너가 넣을 경로
     this.bottomImageHeight = 120,
+    this.redirectAfterSeconds = 2,
   });
 
   final String bottomImagePath;
   final double bottomImageHeight;
+  final int redirectAfterSeconds;
+
+  @override
+  State<WalletConnectedScreen> createState() => _WalletConnectedScreenState();
+}
+
+class _WalletConnectedScreenState extends State<WalletConnectedScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() async {
+      await Future.delayed(Duration(seconds: widget.redirectAfterSeconds));
+      if (!mounted) return;
+      Navigator.of(context).pushNamedAndRemoveUntil('/recordHome', (route) => false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +58,9 @@ class WalletConnectedScreen extends StatelessWidget {
             Align(
               alignment: Alignment.bottomCenter,
               child: Image.asset(
-                bottomImagePath,
+                widget.bottomImagePath,
                 width: double.infinity,
-                height: bottomImageHeight,
+                height: widget.bottomImageHeight,
                 fit: BoxFit.cover,
               ),
             ),

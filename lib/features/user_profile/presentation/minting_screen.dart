@@ -1,4 +1,5 @@
 import 'package:app/core/widgets/custom_bottom_bar.dart';
+import 'package:app/core/services/auth_api.dart';
 import 'package:flutter/material.dart';
 
 class MintingScreen extends StatefulWidget {
@@ -9,6 +10,40 @@ class MintingScreen extends StatefulWidget {
 }
 
 class _MintingScreenState extends State<MintingScreen> {
+  String? _walletAddress;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAddress();
+  }
+
+  Future<void> _loadAddress() async {
+    try {
+      final api = AuthApiService();
+      try {
+        final me = await api.getMe();
+        setState(() {
+          _walletAddress = (me['address'] ?? '').toString();
+        });
+      } catch (_) {
+        final saved = await api.getStoredAddress();
+        setState(() {
+          _walletAddress = saved ?? '';
+        });
+      }
+    } catch (_) {
+      // ignore failures; keep default
+    }
+  }
+
+  String _shortenAddress(String? address) {
+    if (address == null || address.isEmpty) return '—';
+    if (address.length <= 12) return address;
+    final String prefix = address.substring(0, 6);
+    final String suffix = address.substring(address.length - 4);
+    return '$prefix...$suffix';
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -255,7 +290,7 @@ class _MintingScreenState extends State<MintingScreen> {
                                         ),
                                       ),
                                       Text(
-                                        '0x1234...abcd',
+                                        _shortenAddress(_walletAddress),
                                         style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold,

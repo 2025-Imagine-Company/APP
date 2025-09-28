@@ -14,6 +14,8 @@ class WalletKitService {
 
   ReownAppKitModal? _modal;
   ReownAppKitModalWalletInfo? _injectedMetaMask;
+  String? _lastAddress;
+  String? _lastSignature;
 
   void _ensureInitializedWithContext(BuildContext context) {
     if (_modal != null) return;
@@ -102,9 +104,29 @@ class WalletKitService {
         ]),
       );
       if (signature == null) throw StateError('Empty signature');
+      _lastAddress = address;
+      _lastSignature = signature as String?;
       return true;
     } catch (_) {
       return false;
+    }
+  }
+
+  Future<String?> requestAddress() async {
+    if (!kIsWeb) return null;
+    try {
+      final eth = jsu.getProperty(html.window, 'ethereum');
+      if (eth == null) return null;
+      final accounts = await jsu.promiseToFuture(
+        jsu.callMethod(eth, 'request', [jsu.jsify({'method': 'eth_requestAccounts'})]),
+      ) as dynamic;
+      final List accList = accounts is List ? accounts : <dynamic>[];
+      if (accList.isEmpty) return null;
+      final address = accList.first as String;
+      _lastAddress = address;
+      return address;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -170,11 +192,16 @@ class WalletKitService {
       if (result == null) {
         throw StateError('User rejected or empty signature');
       }
+      _lastAddress = address;
+      _lastSignature = result as String?;
       onSuccess?.call();
     } catch (e) {
       onFailure?.call(e);
     }
   }
+
+  String? get lastAddress => _lastAddress;
+  String? get lastSignature => _lastSignature;
 
   Future<void> openSelectionModal(BuildContext context) async {
     if (!kIsWeb) return;

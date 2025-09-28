@@ -1,4 +1,5 @@
 import 'package:app/core/widgets/custom_bottom_bar.dart';
+import 'package:app/core/services/auth_api.dart';
 import 'package:flutter/material.dart';
 
 class MypageScreen extends StatefulWidget {
@@ -9,6 +10,44 @@ class MypageScreen extends StatefulWidget {
 }
 
 class _MypageScreenState extends State<MypageScreen> {
+  String? _name;
+  String? _address;
+  
+  String _shortenAddress(String? address) {
+    if (address == null || address.isEmpty) return 'Wallet Address';
+    if (address.length <= 12) return address;
+    final String prefix = address.substring(0, 6);
+    final String suffix = address.substring(address.length - 4);
+    return '$prefix...$suffix';
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMe();
+  }
+
+  Future<void> _loadMe() async {
+    try {
+      final api = AuthApiService();
+      try {
+        final me = await api.getMe();
+        setState(() {
+          _name = (me['nickname'] ?? 'Name').toString();
+          _address = (me['address'] ?? '').toString();
+        });
+      } catch (_) {
+        // 토큰 없거나 401이면 저장된 주소만 표시
+        final saved = await api.getStoredAddress();
+        setState(() {
+          _name = 'Name';
+          _address = saved ?? '';
+        });
+      }
+    } catch (_) {
+      // 토큰 없거나 실패 시 무시하고 기본값 유지
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,7 +84,7 @@ class _MypageScreenState extends State<MypageScreen> {
           Column(
             children: [
               SizedBox(
-                height: 70,
+                height: 80,
                 child: Row(
                   children: [
                     SizedBox(width: 8),
@@ -57,20 +96,23 @@ class _MypageScreenState extends State<MypageScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 8),
+                          SizedBox(height: 6),
                           Text(
-                            'Name',
+                            _name ?? 'Name',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
+                          SizedBox(height: 4),
                           Text(
-                            'Wallet Address',
+                            _shortenAddress(_address),
                             style: TextStyle(
                               fontSize: 12,
                               color: Color(0x80000000),
                             ),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: false,
                           ),
                         ],
                       ),
