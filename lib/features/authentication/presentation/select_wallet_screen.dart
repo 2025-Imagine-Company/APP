@@ -65,6 +65,7 @@ class WalletSelectScreen extends StatelessWidget {
   }
 
   Future<void> _pickAndLogin(BuildContext context) async {
+    final authBloc = context.read<AuthenticationBloc>(); // await 이전에 캡처
     final wallet = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -72,8 +73,7 @@ class WalletSelectScreen extends StatelessWidget {
       builder: (ctx) => _DevWalletPicker(),
     );
     if (wallet == null) return;
-    // 서버가 소문자로 반환하므로 비교 일관성을 위해 미리 normalize
-    context.read<AuthenticationBloc>().add(LoginWithWallet(wallet.toLowerCase()));
+    authBloc.add(LoginWithWallet(wallet.toLowerCase()));
   }
 }
 
@@ -130,7 +130,7 @@ class _DevWalletPicker extends StatelessWidget {
               child: ListView.separated(
                 shrinkWrap: true,
                 itemCount: wallets.length,
-                separatorBuilder: (_, __) => const Divider(height: 1),
+                separatorBuilder: (_, _) => const Divider(height: 1),
                 itemBuilder: (ctx, i) {
                   final w = wallets[i];
                   return ListTile(

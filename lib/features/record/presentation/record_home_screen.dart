@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../authentication/presentation/authentication_bloc.dart';
 import '../../../../core/widgets/earning_box.dart';
 import '../../../../core/widgets/custom_bottom_bar.dart';
+import '../../../core/services/permission_service.dart';
 
 class RecordHomeScreen extends StatelessWidget {
   const RecordHomeScreen({super.key, this.nickname});
@@ -65,29 +66,48 @@ class _HeaderSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        const SizedBox(height: 20),
-        const Text('home', style: TextStyle(color: Colors.black45, fontSize: 20)),
-        Text('안녕하세요,\n$nickname님!',
-            style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
-        const SizedBox(height: 16),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red, foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              shape: const StadiumBorder(),
+      child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 20),
+            const Text('home', style: TextStyle(color: Colors.black45, fontSize: 20)),
+            Text('안녕하세요,\n$nickname님!',
+                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.w800)),
+            const SizedBox(height: 16),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.red, foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: () async {
+                  final nav = Navigator.of(context);                // await 전에 캡처
+                  final ok = await PermissionService().ensureMic();
+                  if (ok) {nav.pushNamed('/recordWarning');
+                  }else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('마이크 권한이 필요합니다. 설정에서 허용해 주세요.'),
+                          action: SnackBarAction(
+                            label: '설정',
+                            onPressed: () => PermissionService().openSettings(),
+                          ),
+                        ),
+                      );
+                    }
+                  }
+                },
+                child: const Text('녹음하러 가기'),
+              ),
             ),
-            onPressed: () => Navigator.pushNamed(context, '/recordWarning'),
-            child: const Text('녹음하러 가기'),
-          ),
+          ]
         ),
-      ]),
-    );
+      );
+    }
   }
-}
-
 class _HeroImage extends StatelessWidget {
   const _HeroImage({required this.imagePath, this.width = 300});
 
