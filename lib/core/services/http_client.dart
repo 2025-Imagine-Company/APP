@@ -23,6 +23,10 @@ class HttpClient {
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
+        // 강제 baseUrl 고정 (상대경로 사용 시 다른 프록시로 새는 문제 방지)
+        if (options.baseUrl.isEmpty || options.baseUrl != Endpoints.baseUrl) {
+          options.baseUrl = Endpoints.baseUrl;
+        }
         // 비인증 요청 패스
         if (options.extra['auth'] == false) {
           return handler.next(options);
@@ -48,9 +52,7 @@ class HttpClient {
       },
     ));
 
-    dio.interceptors.add(LogInterceptor(
-      responseBody: true,  // ← 응답 JSON 그대로 출력
-    ));
+    // 개발 디버깅용 로깅은 제거
     // 선택: 로깅
     // dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
     return client;
