@@ -11,6 +11,7 @@ build/
 coverage/
 lib/generated_plugin_registrant.dart
 pubspec.lock   # 앱 프로젝트는 유지, 패키지 라이브러리는 제외
+devtools_options.yaml
 
 # IDE / Editor
 .idea/

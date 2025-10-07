@@ -94,7 +94,7 @@ class _WalletSelectScreenState extends State<WalletSelectScreen> {
         }
         dynamic accountsCall;
         try {
-              // requesting accounts
+          // requesting accounts
           accountsCall = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'eth_requestAccounts'})]);
           if (accountsCall == null) {
             throw Exception('[MM-ACCOUNTS] request returned null');
@@ -114,7 +114,7 @@ class _WalletSelectScreenState extends State<WalletSelectScreen> {
         final address = (accounts.first as String).toLowerCase();
         dynamic sig;
         try {
-              // personal_sign attempt
+          // personal_sign attempt
           final signCall = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'personal_sign', 'params': [message, address]})]);
           if (signCall == null) {
             throw Exception('[MM-SIGN] primary request returned null');
@@ -122,7 +122,7 @@ class _WalletSelectScreenState extends State<WalletSelectScreen> {
           sig = await js_util.promiseToFuture(signCall);
         } catch (e1) {
           try {
-                // personal_sign alt order attempt
+            // personal_sign alt order attempt
             final signAltCall = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'personal_sign', 'params': [address, message]})]);
             if (signAltCall == null) {
               throw Exception('[MM-SIGN] alt request returned null');
@@ -148,7 +148,7 @@ class _WalletSelectScreenState extends State<WalletSelectScreen> {
 
       throw Exception('MetaMask 확장이 탐지되지 않았습니다. 데모는 MetaMask 웹 확장 전용입니다.');
     } catch (e, s) {
-          // 상세 원인 노출 제거(릴리즈 정리)
+      // 상세 원인 노출 제거(릴리즈 정리)
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('로그인 준비 실패: ${e.toString()}')),
       );

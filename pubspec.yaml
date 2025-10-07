@@ -3,30 +3,39 @@ description: Audion Project.
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.9.0
+  sdk: ^3.9.0            # Flutter/Dart SDK 버전 범위 (프로젝트가 요구하는 최소 Dart SDK)
 
 dependencies:
   flutter:
-    sdk: flutter
-  cupertino_icons: ^1.0.8
-  record: ^6.1.1
-  audioplayers: ^6.5.0
-  dio: ^5.9.0
-  flutter_secure_storage: ^9.2.4
-  flutter_bloc: ^9.0.0
-  flutter_dotenv: ^6.0.0
-  equatable: ^2.0.5
-  reown_appkit: ^1.2.10
-  percent_indicator: ^4.2.3
-  permission_handler: ^12.0.1
-  shared_preferences: ^2.3.1
+    sdk: flutter         # Flutter SDK 자체
+
+  cupertino_icons: ^1.0.8   # iOS 스타일 아이콘 세트
+
+  # 녹음/오디오
+  flutter_sound: ^9.2.13
+  audioplayers: ^6.5.0      # 오디오 재생 (효과음/프리뷰 등)
+  permission_handler: ^12.0.1 # 런타임 권한 요청(마이크/스토리지 등)
+  path_provider: ^2.1.4
+
+  # 네트워크/인증/상태관리
+  dio: ^5.9.0               # HTTP 클라이언트 (API 통신)
+  flutter_secure_storage: ^9.2.4 # OS 보안영역에 토큰/민감정보 저장
+  flutter_bloc: ^9.0.0      # BLoC 상태관리
+  flutter_dotenv: ^6.0.0    # .env 환경변수 로딩 (API URL 등)
+  equatable: ^2.0.5         # 값 비교 편의 (BLoC State 등에서 사용)
+
+  # Web3/지갑/지표
+  reown_appkit: ^1.2.10     # 지갑 연결 등 Web3 관련 툴킷
+  percent_indicator: ^4.2.3 # 원형/직선 퍼센트 인디케이터 UI
+  shared_preferences: ^2.3.1 # 간단한 로컬 Key-Value 저장(비민감 데이터)
+
 dev_dependencies:
   flutter_test:
-    sdk: flutter
-  flutter_lints: ^6.0.0
+    sdk: flutter            # 위젯/단위 테스트 프레임워크
+  flutter_lints: ^6.0.0     # 추천 Lints(코드 스타일/버그 예방)
 
 flutter:
-  uses-material-design: true
+  uses-material-design: true # 머티리얼 아이콘 사용
   assets:
-    - assets/images/
-    - assets/icons/
+    - assets/images/        # 이미지 에셋 폴더 등록
+    - assets/icons/         # 아이콘 에셋 폴더 등록
