@@ -1,10 +1,2 @@
 // lib/core/constants/dev_wallets.dart
-class DevWallets {
-  static const list = <String>[
-    '0x1234567890123456789012345678901234567890',
-    '0xabcdefabcdefabcdefabcdefabcdefabcdefabcd',
-    '0x9876543210987654321098765432109876543210',
-    '0xdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef',
-    '0xcafebabecafebabecafebabecafebabecafebabe',
-  ];
-}
+// 데모 간소화: 더 이상 사용하지 않음 (삭제 예정 파일)

@@ -4,7 +4,7 @@ import '../../../core/constants/endpoints.dart';
 import '../domain/auth_entities.dart';
 
 abstract class IAuthApi {
-  Future<AuthToken> testLogin(String wallet);
+  Future<AuthToken> testLogin({required String walletAddress, required String message, required String signature});
   Future<Me> me();
 }
 
@@ -13,11 +13,15 @@ class AuthApi implements IAuthApi {
   AuthApi(this._dio);
 
   @override
-  Future<AuthToken> testLogin(String wallet) async {
+  Future<AuthToken> testLogin({required String walletAddress, required String message, required String signature}) async {
     final res = await _dio.post<Map<String, dynamic>>(
       Endpoints.testLogin,
-      queryParameters: {'walletAddress': wallet.toLowerCase()},
-      options: Options(extra: {'auth': false}), // 인터셉터가 인식하도록 아래 수정 필요
+      data: {
+        'walletAddress': walletAddress.toLowerCase(),
+        'message': message,
+        'signature': signature,
+      },
+      options: Options(extra: {'auth': false}),
     );
     final d = res.data!;
     return AuthToken(

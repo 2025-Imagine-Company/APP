@@ -1,85 +1,25 @@
-# Flutter / Dart
+# Flutter/Dart
 .dart_tool/
-.build/
-build/
+.packages
 .flutter-plugins
 .flutter-plugins-dependencies
-.fvm/
-.packages
-.pub-cache/
-.pub/
-coverage/
-lib/generated_plugin_registrant.dart
-pubspec.lock   # 앱 프로젝트는 유지, 패키지 라이브러리는 제외
 
-# IDE / Editor
-.idea/
-.vscode/
-*.iml
-*.ipr
-*.iws
-.gradle/
-captures/
+# Build outputs
+build/
+
+# iOS
+ios/Flutter/ephemeral/
+ios/.generated/
 
 # Android
-**/android/**/gradle-wrapper.jar
-**/android/.gradle
-**/android/captures/
-**/android/gradlew
-**/android/gradlew.bat
-**/android/key.properties
-**/android/local.properties
-**/android/**/GeneratedPluginRegistrant.java
-android/app/build/
+android/.gradle/
+android/local.properties
+android/key.properties
+android/app/*.keystore
 
-# iOS / Xcode
-ios/Pods/
-ios/.symlinks/
-ios/.generated/
-ios/Flutter/.last_build_id
-ios/Flutter/App.framework
-ios/Flutter/Flutter.framework
-ios/Flutter/Flutter.podspec
-ios/Flutter/Generated.xcconfig
-ios/Flutter/flutter_export_environment.sh
-ios/ServiceDefinitions.json
-ios/Runner/GeneratedPluginRegistrant.*
-**/ios/**/*.mode1v3
-**/ios/**/*.mode2v3
-**/ios/**/*.moved-aside
-**/ios/**/*.pbxuser
-**/ios/**/*.perspectivev3
-**/ios/**/*sync/
-**/ios/**/.sconsign.dblite
-**/ios/**/.tags*
-**/ios/**/.vagrant/
-**/ios/**/DerivedData/
-**/ios/**/Icon?
-**/ios/**/profile
-**/ios/**/xcuserdata
-**/ios/Runner.xcworkspace/
-**/ios/Runner.xcodeproj/project.xcworkspace/
-**/ios/Runner.xcodeproj/xcuserdata/
-**/ios/Runner.xcodeproj/xcshareddata/
-**/ios/Runner.xcodeproj/xcdebugger/
+# IDE
+.idea/
+.vscode/
 
-# Desktop
-windows/
-macos/
-linux/
-
-# Environment / Metadata
-.env
-.metadata
-
-# Xcode Build
-DerivedData/
-*.xcuserstate
-*.xcworkspace
-*.xccheckout
-*.xcscmblueprint
-
-# OS / Misc
+# Misc
 .DS_Store
-Thumbs.db
-*.log
