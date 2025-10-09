@@ -8,6 +8,7 @@ import 'core/themes/theme.dart';
 // API 통신
 import 'core/services/http_client.dart';
 import 'core/services/token_provider.dart';
+import 'core/services/http_client.dart' show HttpClient;
 import 'features/authentication/data/auth_api.dart';
 import 'features/authentication/data/auth_repository.dart';
 import 'features/authentication/presentation/authentication_bloc.dart';
@@ -42,7 +43,7 @@ void main() async {
 
   final http = HttpClient(tokenProvider);
   final api  = AuthApi(http.raw);
-  final repo = AuthRepository(api: api, tokenSink: _TokenSinkImpl(tokenProvider));
+  final repo = AuthRepository(api: api, tokenSink: _TokenSinkImpl(tokenProvider, http));
 
   runApp(AudionApp(repo: repo));
 }
@@ -56,7 +57,7 @@ class AudionApp extends StatelessWidget {
     return RepositoryProvider.value(
       value: repo,
       child: BlocProvider(
-        create: (_) => AuthenticationBloc(repo)..add(const CheckSession()),
+        create: (_) => AuthenticationBloc(repo),
         child: MaterialApp(
           title: 'Audion',
           theme: appTheme,
@@ -85,9 +86,16 @@ class AudionApp extends StatelessWidget {
 
 class _TokenSinkImpl implements TokenSink {
   final SecureTokenProvider provider;
-  _TokenSinkImpl(this.provider);
+  final HttpClient http;
+  _TokenSinkImpl(this.provider, this.http);
   @override
-  Future<void> clear() => provider.clear();
+  Future<void> clear() async {
+    await provider.clear();
+    http.setToken(null);
+  }
   @override
-  Future<void> save(String token) => provider.save(token);
+  Future<void> save(String token) async {
+    await provider.save(token);
+    http.setToken(token);
+  }
 }

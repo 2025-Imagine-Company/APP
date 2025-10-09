@@ -7,6 +7,9 @@ import 'package:app/features/authentication/data/auth_repository.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 import 'dart:js_util' as js_util;
+import 'dart:convert' show utf8;
+import 'dart:typed_data';
+import 'package:web3dart/crypto.dart' show bytesToHex;
 
 class WalletSelectScreen extends StatefulWidget {
   const WalletSelectScreen({super.key});
@@ -111,25 +114,57 @@ class _WalletSelectScreenState extends State<WalletSelectScreen> {
         if (accounts.isEmpty || accounts.first == null) {
           throw Exception('[MM-ACCOUNTS] 지갑 계정을 가져오지 못했습니다.');
         }
-        final address = (accounts.first as String).toLowerCase();
+        // 체크섬 주소 그대로 사용(일부 월렛에서 대소문자 민감하게 처리)
+        final address = (accounts.first as String);
+        // Sepolia 체인 스위치/추가 시도(모바일에서 종종 필요)
+        const sepoliaHex = '0xaa36a7';
+        try {
+          final switchCall = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'wallet_switchEthereumChain', 'params': [ {'chainId': sepoliaHex} ]})]);
+          if (switchCall != null) {
+            await js_util.promiseToFuture(switchCall);
+          }
+        } catch (_) {
+          try {
+            final addCall = js_util.callMethod(eth, 'request', [js_util.jsify({
+              'method': 'wallet_addEthereumChain',
+              'params': [
+                {
+                  'chainId': sepoliaHex,
+                  'chainName': 'Sepolia',
+                  'nativeCurrency': { 'name': 'SepoliaETH', 'symbol': 'SEP', 'decimals': 18 },
+                  'rpcUrls': ['https://sepolia.infura.io/v3/'],
+                  'blockExplorerUrls': ['https://sepolia.etherscan.io'],
+                }
+              ],
+            })]);
+            if (addCall != null) {
+              await js_util.promiseToFuture(addCall);
+            }
+          } catch (_) {}
+        }
+        // personal_sign 전용(EIP-191)으로 서명하여 백엔드 검증과 일치시킴
+        final Uint8List msgBytes = Uint8List.fromList(utf8.encode(message));
+        final String messageHex = '0x' + bytesToHex(msgBytes, include0x: false);
         dynamic sig;
         try {
-              // personal_sign attempt
-          final signCall = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'personal_sign', 'params': [message, address]})]);
+          final signCall = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'personal_sign', 'params': [messageHex, address]})]);
           if (signCall == null) {
             throw Exception('[MM-SIGN] primary request returned null');
           }
           sig = await js_util.promiseToFuture(signCall);
         } catch (e1) {
           try {
-                // personal_sign alt order attempt
-            final signAltCall = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'personal_sign', 'params': [address, message]})]);
+            final signAltCall = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'personal_sign', 'params': [address, messageHex]})]);
             if (signAltCall == null) {
               throw Exception('[MM-SIGN] alt request returned null');
             }
             sig = await js_util.promiseToFuture(signAltCall);
           } catch (e2) {
-            throw Exception('[MM-SIGN] both orders failed: primary=$e1, alt=$e2');
+            final oneParam = js_util.callMethod(eth, 'request', [js_util.jsify({'method': 'personal_sign', 'params': [messageHex]})]);
+            if (oneParam == null) {
+              throw Exception('[MM-SIGN] one-param request returned null');
+            }
+            sig = await js_util.promiseToFuture(oneParam);
           }
         }
         final signature = sig is String ? sig : sig.toString();
@@ -138,7 +173,7 @@ class _WalletSelectScreenState extends State<WalletSelectScreen> {
         }
         final repo = context.read<AuthRepository>();
         try {
-          await repo.loginWithSignature(walletAddress: address, message: message, signature: signature);
+          await repo.loginWithSignature(walletAddress: address.toLowerCase(), message: message, signature: signature);
         } catch (e) {
           throw Exception('[API-LOGIN] 호출 실패: $e');
         }

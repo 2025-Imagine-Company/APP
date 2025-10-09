@@ -14,6 +14,15 @@ class LoginWithWallet extends AuthEvent {
   List<Object?> get props => [wallet];
 }
 
+class LoginWithSignature extends AuthEvent {
+  final String walletAddress;
+  final String message;
+  final String signature;
+  const LoginWithSignature({required this.walletAddress, required this.message, required this.signature});
+  @override
+  List<Object?> get props => [walletAddress, message, signature];
+}
+
 class CheckSession extends AuthEvent {
   const CheckSession();
 }
