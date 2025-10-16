@@ -10,10 +10,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-// ▼ 추가: 업로드용 API
 import 'package:app/core/services/http_client.dart';
 import 'package:app/core/services/token_provider.dart';
-import 'package:app/features/record/data/voice_api.dart';
+import 'package:app/features/record/data/record_api.dart';
 
 class RecordScreen extends StatefulWidget {
   const RecordScreen({
@@ -42,7 +41,6 @@ class _RecordScreenState extends State<RecordScreen> {
 
   final AudioRecorder _rec = AudioRecorder();
   final AudioPlayer _player = AudioPlayer();
-  bool _isRec = false;
 
   // 네이티브 결과
   String? _lastPath;
@@ -216,7 +214,6 @@ class _RecordScreenState extends State<RecordScreen> {
       _webStreamSub = stream.listen((chunk) => _webPcm.addAll(chunk));
 
       setState(() {
-        _isRec = true;
         _lastPath = null;
       });
       return;
@@ -245,7 +242,6 @@ class _RecordScreenState extends State<RecordScreen> {
 
     await _rec.start(cfg, path: path);
     setState(() {
-      _isRec = true;
       _lastPath = path;
     });
   }
@@ -253,14 +249,12 @@ class _RecordScreenState extends State<RecordScreen> {
   Future<void> _pauseRec() async {
     if (await _rec.isRecording()) {
       await _rec.pause();
-      if (mounted) setState(() => _isRec = false);
     }
   }
 
   Future<void> _resumeRec() async {
     if (await _rec.isPaused()) {
       await _rec.resume();
-      setState(() => _isRec = true);
     } else if (!await _rec.isRecording()) {
       await _startRec();
     }
@@ -281,7 +275,6 @@ class _RecordScreenState extends State<RecordScreen> {
       _lastFileName = 'rec_${DateTime.now().millisecondsSinceEpoch}.wav';
 
       setState(() {
-        _isRec = false;
         _lastPath = null;
       });
       return null;
@@ -289,7 +282,6 @@ class _RecordScreenState extends State<RecordScreen> {
 
     if (!await _rec.isRecording() && !await _rec.isPaused()) return _lastPath;
     final path = await _rec.stop();
-    setState(() => _isRec = false);
     _lastPath = path ?? _lastPath;
     return _lastPath;
   }

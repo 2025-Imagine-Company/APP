@@ -6,7 +6,7 @@ import 'package:dio/dio.dart';
 
 import 'package:app/core/services/http_client.dart';
 import 'package:app/core/services/token_provider.dart';
-import 'package:app/features/record/data/voice_api.dart';
+import 'package:app/features/record/data/record_api.dart';
 
 enum ModelStatus { training, done, error, unknown }
 

@@ -22,6 +22,14 @@ class _MintingScreenState extends State<MintingScreen> {
   bool _fetched = false;
   bool _isMinting = false;
 
+  // mypage에서 받아온 모델 정보
+  // _MintingScreenState
+  String? _argModelId;
+  String? _argModelName;
+  String? _argPreviewUrl;
+  String? _argModelPath;
+
+
   // Sepolia 배포된 컨트랙트/고정 tokenURI(데모용)
   static const String _contractAddress = '0x147cf4ba7825a8e70d0a016f9ad523b2bacdde36';
   static const String _sepoliaChainHex = '0xaa36a7'; // 11155111
