@@ -7,4 +7,6 @@ class Endpoints {
   );
   static const testLogin = '/auth/login';
   static const me = '/auth/me';
+  static const voiceUpload = '/voice/upload';
+
 }
