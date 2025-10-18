@@ -452,7 +452,7 @@ class _RecordScreenState extends State<RecordScreen> {
           onPressed: () => Navigator.pop(context),
         ),
         centerTitle: true,
-        title: Text(isRecording ? 'RECORDING...' : 'READY'),
+        title: Text(isRecording ? 'RECORDING...' : 'RECORD PAGE'),
       ),
       body: SafeArea(
         child: Column(
