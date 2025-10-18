@@ -1,67 +1,66 @@
+// lib/core/services/http_client.dart
 import 'package:dio/dio.dart';
-import '../constants/endpoints.dart';
-import 'token_provider.dart';
+import 'package:app/core/constants/endpoints.dart';
+import 'package:app/core/services/token_provider.dart';
 
 class HttpClient {
   final Dio _dio;
-  String? _cachedToken; // 메모리 캐시
+  String? _cachedToken;
 
   HttpClient._(this._dio);
 
   factory HttpClient(TokenProvider tokenProvider) {
     final dio = Dio(BaseOptions(
-      baseUrl: Endpoints.baseUrl,                // 예: https://api.example.com
+      baseUrl: Endpoints.baseUrl,
       connectTimeout: const Duration(seconds: 8),
       receiveTimeout: const Duration(seconds: 12),
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
-      },
+      headers: {'Accept': 'application/json'},
+      // <= 모든 상태코드를 '성공'으로 간주해 예외를 던지지 않게 함
+      validateStatus: (code) => true,
+      // 상태코드가 에러여도 바디는 받게
+      receiveDataWhenStatusError: true,
     ));
 
     final client = HttpClient._(dio);
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) async {
-        // 강제 baseUrl 고정 (상대경로 사용 시 다른 프록시로 새는 문제 방지)
-        if (options.baseUrl.isEmpty || options.baseUrl != Endpoints.baseUrl) {
+        if (options.baseUrl != Endpoints.baseUrl) {
           options.baseUrl = Endpoints.baseUrl;
         }
-        // 비인증 요청 패스
-        if (options.extra['auth'] == false) {
-          return handler.next(options);
-        }
-        // 캐시 토큰 없으면 1회 로드
-        client._cachedToken ??= await tokenProvider.read();
+        if (options.extra['auth'] == false) return handler.next(options);
 
-        if (client._cachedToken != null && client._cachedToken!.isNotEmpty) {
-          options.headers['Authorization'] = 'Bearer ${client._cachedToken}';
+        client._cachedToken ??= await tokenProvider.read();
+        final t = client._cachedToken;
+        if (t != null && t.isNotEmpty) {
+          options.headers['Authorization'] = 'Bearer $t';
         } else {
           options.headers.remove('Authorization');
         }
         handler.next(options);
       },
       onError: (e, handler) async {
-        // 401 처리 예시: 토큰 만료 → 로그아웃/클리어
         if (e.response?.statusCode == 401) {
           client._cachedToken = null;
           await tokenProvider.clear();
-          // TODO: Bloc에 Logout 이벤트 발행하거나 재시도 로직 추가
         }
         handler.next(e);
       },
     ));
 
-    // 개발 디버깅용 로깅은 제거
-    // 선택: 로깅
-    // dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
+    // 에러 로그는 끄고 요청/응답만 가볍게 출력
+    dio.interceptors.add(LogInterceptor(
+      request: true,
+      requestHeader: true,
+      requestBody: false,
+      responseHeader: true,
+      responseBody: true,
+      error: false, // <= 여기!
+    ));
+
     return client;
   }
 
-  // 로그인 성공 직후 메모리 캐시 갱신용
-  void setToken(String? token) {
-    _cachedToken = token;
-  }
-
+  void setToken(String? token) => _cachedToken = token;
   Dio get raw => _dio;
 }

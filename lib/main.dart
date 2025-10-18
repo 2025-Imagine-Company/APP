@@ -61,9 +61,9 @@ class AudionApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Audion',
           theme: appTheme,
-          initialRoute: '/recordHome',
+          initialRoute: '/',
           routes: {
-            '/':            (context) => const MintingScreen(),
+            '/':            (context) => const SplashScreen(),
             '/splash':      (context) => const SplashScreen(),
             '/intro':       (context) => const IntroScreen(),
             '/login':       (context) => const LoginScreen(),
