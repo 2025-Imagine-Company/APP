@@ -101,10 +101,10 @@ packages:
     dependency: transitive
     description:
       name: bloc
-      sha256: e18b8e7825e9921d67a6d256dba0b6015ece8a577eb0a411845c46a352994d78
+      sha256: a2cebb899f91d36eeeaa55c7b20b5915db5a9df1b8fd4a3c9c825e22e474537d
       url: "https://pub.dev"
     source: hosted
-    version: "9.0.1"
+    version: "9.1.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -644,10 +644,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_android
-      sha256: "3b4c1fc3aa55ddc9cd4aa6759984330d5c8e66aa7702a6223c61540dc6380c37"
+      sha256: e122c5ea805bb6773bb12ce667611265980940145be920cd09a4b0ec0285cb16
       url: "https://pub.dev"
     source: hosted
-    version: "2.2.19"
+    version: "2.2.20"
   path_provider_foundation:
     dependency: transitive
     description:
@@ -852,10 +852,10 @@ packages:
     dependency: transitive
     description:
       name: record_web
-      sha256: "4f0adf20c9ccafcc02d71111fd91fba1ca7b17a7453902593e5a9b25b74a5c56"
+      sha256: "20ac10d56514cb9f8cecc8f3579383084fdfb43b0d04e05a95244d0d76091d90"
       url: "https://pub.dev"
     source: hosted
-    version: "1.2.0"
+    version: "1.2.1"
   record_windows:
     dependency: transitive
     description:
@@ -868,26 +868,26 @@ packages:
     dependency: "direct main"
     description:
       name: reown_appkit
-      sha256: "3c4e0e8b95ee9bb2d9ef6abd54734646950023a74152d39db6d5eeef9e4c3388"
+      sha256: "7538471537a1307488d5210ee0e0d9df44a0c0cc05a7ed576cf5afb6bede3cef"
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.1"
+    version: "1.6.2"
   reown_core:
     dependency: transitive
     description:
       name: reown_core
-      sha256: "8bb095d6e50ce5ee1a6a5bb50d3032b9fa283be75f1d002457d61d0cdb2062b9"
+      sha256: "231a045ce00db54fdf90df0a3eb180ab325d871dfbcb631d7d0c0c26dd490ba4"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.3.3"
   reown_sign:
     dependency: transitive
     description:
       name: reown_sign
-      sha256: "008dcf02cb6cffa89b73e0296c45055ca2bf4edc84b93f73a3ba0c80dff459b8"
+      sha256: d89e2e8c51d992e145c3db7727d522955d084c13c9bb72ab94cee209982e162d
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.1"
+    version: "1.3.3"
   rxdart:
     dependency: transitive
     description:
