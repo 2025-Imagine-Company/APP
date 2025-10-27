@@ -27,9 +27,9 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
       body: Center(
-        child: Text('Audion', style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold)),
+        child: Image.asset('assets/images/splash.png', fit: BoxFit.contain),
       ),
     );
   }
