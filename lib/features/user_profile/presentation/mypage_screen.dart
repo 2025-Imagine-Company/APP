@@ -31,6 +31,13 @@ class _MypageScreenState extends State<MypageScreen> {
   String? _modelError;
   List<Map<String, dynamic>> _myModels = [];
 
+  // 정상(DONE) 모델 수 계산된 값
+  int get _doneModelCount {
+    return _myModels
+        .where((m) => (m['status'] ?? '').toString().toUpperCase() == 'DONE')
+        .length;
+  }
+
   // 펼침 상태
   String? _expandedModelId;
   Map<String, dynamic>? _expandedDetail;
@@ -88,10 +95,7 @@ class _MypageScreenState extends State<MypageScreen> {
           js_util.jsify({
             'method': 'eth_call',
             'params': [
-              {
-                'to': _contractAddress,
-                'data': dataBal,
-              },
+              {'to': _contractAddress, 'data': dataBal},
               'latest'
             ]
           })
@@ -111,10 +115,7 @@ class _MypageScreenState extends State<MypageScreen> {
           js_util.jsify({
             'method': 'eth_call',
             'params': [
-              {
-                'to': _contractAddress,
-                'data': dataNext,
-              },
+              {'to': _contractAddress, 'data': dataNext},
               'latest'
             ]
           })
@@ -137,10 +138,7 @@ class _MypageScreenState extends State<MypageScreen> {
             js_util.jsify({
               'method': 'eth_call',
               'params': [
-                {
-                  'to': _contractAddress,
-                  'data': callData,
-                },
+                {'to': _contractAddress, 'data': callData},
                 'latest'
               ]
             })
@@ -170,7 +168,14 @@ class _MypageScreenState extends State<MypageScreen> {
     });
     try {
       final list = await _voiceApi.getMyModels();
-      _myModels = list.map<Map<String, dynamic>>((e) => Map<String, dynamic>.from(e as Map)).toList();
+      _myModels = list
+          .map<Map<String, dynamic>>(
+              (e) => Map<String, dynamic>.from(e as Map))
+          .toList();
+
+      // 모델 로드된 뒤 ActivitySummary는 setState로 다시 그려지므로
+      // 별도 작업 필요 없다.
+      if (mounted) setState(() {});
     } catch (e) {
       _modelError = e.toString();
     } finally {
@@ -205,7 +210,6 @@ class _MypageScreenState extends State<MypageScreen> {
     }
   }
 
-  // ⬇️ 확인 다이얼로그 + 민팅 화면 이동
   Future<void> _confirmAndGoMint({
     required String modelId,
     required String modelName,
@@ -278,8 +282,14 @@ class _MypageScreenState extends State<MypageScreen> {
       body: Stack(
         children: [
           Positioned(
-            bottom: 0, left: 0, right: 0,
-            child: Image.asset("assets/images/bottom_gradient.png", height: 300, fit: BoxFit.cover),
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Image.asset(
+              "assets/images/bottom_gradient.png",
+              height: 300,
+              fit: BoxFit.cover,
+            ),
           ),
           Column(
             children: [
@@ -295,15 +305,31 @@ class _MypageScreenState extends State<MypageScreen> {
                       padding: const EdgeInsets.all(5),
                       child: BlocBuilder<AuthenticationBloc, AuthState>(
                         builder: (context, state) {
-                          final displayName = state.me?.displayName ?? 'Name';
-                          final walletFull = state.me?.walletAddress ?? '';
+                          final displayName =
+                              state.me?.displayName ?? 'Name';
+                          final walletFull =
+                              state.me?.walletAddress ?? '';
                           final wallet = _shortenWallet(walletFull);
                           return Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               const SizedBox(height: 8),
-                              Text(displayName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                              Text(wallet, style: const TextStyle(fontSize: 12, color: Color(0x80000000)), maxLines: 1, overflow: TextOverflow.ellipsis),
+                              Text(
+                                displayName,
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              Text(
+                                wallet,
+                                style: const TextStyle(
+                                  fontSize: 12,
+                                  color: Color(0x80000000),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             ],
                           );
                         },
@@ -320,19 +346,25 @@ class _MypageScreenState extends State<MypageScreen> {
                     const SizedBox(height: 8),
                     const Padding(
                       padding: EdgeInsets.only(left: 10),
-                      child: Text('Activity Summary', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                      child: Text(
+                        'Activity Summary',
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ),
                     const SizedBox(height: 8),
                     Expanded(
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: const [
-                          SizedBox(width: 10),
-                          ActivitySummary(), SizedBox(width: 10),
-                          ActivitySummary(), SizedBox(width: 10),
-                          ActivitySummary(), SizedBox(width: 10),
-                          ActivitySummary(), SizedBox(width: 10),
-                          ActivitySummary(), SizedBox(width: 10),
+                        children: [
+                          const SizedBox(width: 10),
+                          // 여기 숫자 전달
+                          ActivitySummary(
+                            totalDoneModels: _doneModelCount,
+                          ),
+                          const SizedBox(width: 10),
                         ],
                       ),
                     ),
@@ -346,66 +378,133 @@ class _MypageScreenState extends State<MypageScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text('내 모델 관리', style: TextStyle(fontSize: 17, fontWeight: FontWeight.bold)),
+                      const Text('내 모델 관리',
+                          style: TextStyle(
+                              fontSize: 17,
+                              fontWeight: FontWeight.bold)),
                       const SizedBox(height: 8),
                       BlocBuilder<AuthenticationBloc, AuthState>(
                         builder: (context, state) {
                           return Expanded(
                             child: _loadingModels
-                                ? const Center(child: CircularProgressIndicator())
+                                ? const Center(
+                              child: CircularProgressIndicator(),
+                            )
                                 : _modelError != null
-                                ? Center(child: Text(_modelError!))
+                                ? Center(
+                              child: Text(_modelError!),
+                            )
                                 : RefreshIndicator(
                               onRefresh: _loadMyModels,
                               child: _myModels.isEmpty
                                   ? ListView(
                                 children: const [
                                   SizedBox(height: 120),
-                                  Center(child: Text('등록된 음성 모델이 없습니다.')),
+                                  Center(
+                                    child: Text(
+                                        '등록된 음성 모델이 없습니다.'),
+                                  ),
                                 ],
                               )
                                   : ListView.separated(
-                                itemCount: _myModels.length,
-                                separatorBuilder: (_, __) => const Divider(color: Color(0x1A000000), thickness: 1),
-                                itemBuilder: (context, index) {
-                                  final m = _myModels[index];
-                                  final name = (m['modelName'] ?? '이름 없음').toString();
-                                  final status = (m['status'] ?? 'UNKNOWN').toString();
-                                  final created = (m['createdAt'] ?? '').toString();
-                                  final modelId = (m['modelId'] ?? '').toString();
+                                itemCount:
+                                _myModels.length,
+                                separatorBuilder:
+                                    (_, __) =>
+                                const Divider(
+                                  color: Color(
+                                      0x1A000000),
+                                  thickness: 1,
+                                ),
+                                itemBuilder:
+                                    (context, index) {
+                                  final m =
+                                  _myModels[index];
+                                  final name = (m[
+                                  'modelName'] ??
+                                      '이름 없음')
+                                      .toString();
+                                  final status = (m[
+                                  'status'] ??
+                                      'UNKNOWN')
+                                      .toString();
+                                  final created = (m[
+                                  'createdAt'] ??
+                                      '')
+                                      .toString();
+                                  final modelId = (m[
+                                  'modelId'] ??
+                                      '')
+                                      .toString();
 
-                                  final isExpanded = _expandedModelId == modelId;
+                                  final isExpanded =
+                                      _expandedModelId ==
+                                          modelId;
 
                                   return Column(
                                     children: [
                                       _ModelTile(
                                         title: name,
-                                        subtitle: '상태: $status · 생성: ${created.isEmpty ? '-' : created}',
-                                        status: status,
-                                        onTap: () => _onTapModelTile(modelId),
+                                        subtitle:
+                                        '상태: $status · 생성: ${created.isEmpty ? '-' : created}',
+                                        status:
+                                        status,
+                                        onTap: () =>
+                                            _onTapModelTile(
+                                                modelId),
                                       ),
-                                      if (isExpanded && _expandedLoading)
+                                      if (isExpanded &&
+                                          _expandedLoading)
                                         const Padding(
-                                          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                                          child: LinearProgressIndicator(minHeight: 2),
+                                          padding: EdgeInsets
+                                              .symmetric(
+                                              horizontal:
+                                              12,
+                                              vertical:
+                                              8),
+                                          child:
+                                          LinearProgressIndicator(
+                                            minHeight:
+                                            2,
+                                          ),
                                         ),
-                                      if (isExpanded && !_expandedLoading)
+                                      if (isExpanded &&
+                                          !_expandedLoading)
                                         _ModelActionBox(
-                                          previewUrl: (_expandedDetail?['previewUrl'] ?? '').toString(),
-                                          onMint: () => _confirmAndGoMint(modelId: modelId, modelName: name),
-                                          onPlay: () {
-                                            final url = (_expandedDetail?['previewUrl'] ?? '').toString();
-                                            if (url.isEmpty) {
+                                          previewUrl: (_expandedDetail?[
+                                          'previewUrl'] ??
+                                              '')
+                                              .toString(),
+                                          onMint: () =>
+                                              _confirmAndGoMint(
+                                                modelId:
+                                                modelId,
+                                                modelName:
+                                                name,
+                                              ),
+                                          onPlay:
+                                              () {
+                                            final url = (_expandedDetail?['previewUrl'] ??
+                                                '')
+                                                .toString();
+                                            if (url
+                                                .isEmpty) {
                                               ScaffoldMessenger.of(context).showSnackBar(
-                                                const SnackBar(content: Text('미리보기 URL이 없습니다.')),
+                                                const SnackBar(
+                                                  content: Text('미리보기 URL이 없습니다.'),
+                                                ),
                                               );
                                               return;
                                             }
                                             if (kIsWeb) {
-                                              html.window.open(url, '_blank');
+                                              html.window.open(
+                                                  url,
+                                                  '_blank');
                                             } else {
                                               ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(content: Text('미리보기: $url')),
+                                                SnackBar(
+                                                  content: Text('미리보기: $url'),
+                                                ),
                                               );
                                             }
                                           },
@@ -432,7 +531,12 @@ class _MypageScreenState extends State<MypageScreen> {
 }
 
 class ActivitySummary extends StatelessWidget {
-  const ActivitySummary({super.key});
+  final int totalDoneModels; // <- 추가된 필드
+
+  const ActivitySummary({
+    super.key,
+    required this.totalDoneModels,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -444,11 +548,18 @@ class ActivitySummary extends StatelessWidget {
         border: Border.all(color: Color(0x1A000000), width: 1),
         borderRadius: BorderRadius.circular(6),
       ),
-      child: const Column(
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Total Recordings', style: TextStyle(fontSize: 14)),
-          Text('25', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          const Text('Total Recordings',
+              style: TextStyle(fontSize: 14)),
+          Text(
+            '$totalDoneModels', // <- 여기 동적 표시
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -471,30 +582,52 @@ class MyNFT extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               TextButton(
-                style: TextButton.styleFrom(foregroundColor: Colors.black),
+                style: TextButton.styleFrom(
+                    foregroundColor: Colors.black),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('이름 재설정 기능은 아직 구현되지 않았습니다.')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('이름 재설정 기능은 아직 구현되지 않았습니다.'),
+                    ),
+                  );
                 },
                 child: const Text('이름 재설정'),
               ),
               TextButton(
-                style: TextButton.styleFrom(foregroundColor: Colors.black),
+                style: TextButton.styleFrom(
+                    foregroundColor: Colors.black),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('보내기 기능은 아직 구현되지 않았습니다.')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('보내기 기능은 아직 구현되지 않았습니다.'),
+                    ),
+                  );
                 },
                 child: const Text('보내기'),
               ),
               TextButton(
-                style: TextButton.styleFrom(foregroundColor: Colors.black),
+                style: TextButton.styleFrom(
+                    foregroundColor: Colors.black),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('숨기기 기능은 아직 구현되지 않았습니다.')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('숨기기 기능은 아직 구현되지 않았습니다.'),
+                    ),
+                  );
                 },
                 child: const Text('숨기기'),
               ),
               TextButton(
-                style: TextButton.styleFrom(backgroundColor: Color(0xFFFF2424), foregroundColor: Colors.white),
+                style: TextButton.styleFrom(
+                  backgroundColor: Color(0xFFFF2424),
+                  foregroundColor: Colors.white,
+                ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('플레이 기능은 아직 구현되지 않았습니다.')));
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('플레이 기능은 아직 구현되지 않았습니다.'),
+                    ),
+                  );
                 },
                 child: const Text('Play'),
               ),
@@ -512,30 +645,46 @@ class MyNFT extends StatelessWidget {
       child: SizedBox(
         height: 64,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment:
+          MainAxisAlignment.spaceBetween,
           children: [
             Row(
               children: const [
                 CircleAvatar(
                   radius: 18,
                   backgroundColor: Color(0x0D000000),
-                  backgroundImage: AssetImage('assets/images/audion_logo.png'),
+                  backgroundImage:
+                  AssetImage('assets/images/audion_logo.png'),
                 ),
                 SizedBox(width: 8),
                 Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
+                  mainAxisAlignment:
+                  MainAxisAlignment.center,
                   children: [
-                    Text('Voice NFT', style: TextStyle(fontSize: 14)),
-                    Text('Recording', style: TextStyle(fontSize: 12, color: Color(0x80000000))),
+                    Text('Voice NFT',
+                        style: TextStyle(fontSize: 14)),
+                    Text(
+                      'Recording',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Color(0x80000000),
+                      ),
+                    ),
                   ],
                 ),
               ],
             ),
             const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [Text('Date:'), Text('01/01/2025')],
+              mainAxisAlignment:
+              MainAxisAlignment.center,
+              crossAxisAlignment:
+              CrossAxisAlignment.end,
+              children: [
+                Text('Date:'),
+                Text('01/01/2025'),
+              ],
             ),
           ],
         ),
@@ -559,7 +708,8 @@ class _ModelActionBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+      padding:
+      const EdgeInsets.fromLTRB(12, 0, 12, 12),
       child: Column(
         children: [
           const SizedBox(height: 8),
@@ -568,12 +718,18 @@ class _ModelActionBox extends StatelessWidget {
               Expanded(
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFFEDEDED),
+                    backgroundColor:
+                    const Color(0xFFEDEDED),
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding:
+                    const EdgeInsets.symmetric(
+                        vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.circular(8),
+                    ),
                   ),
-                  onPressed: onMint, // 민팅 확인 다이얼로그 + /minting 이동
+                  onPressed: onMint,
                   child: const Text('보내기'),
                 ),
               ),
@@ -581,12 +737,19 @@ class _ModelActionBox extends StatelessWidget {
               Expanded(
                 child: TextButton(
                   style: TextButton.styleFrom(
-                    backgroundColor: const Color(0xFFEDEDED),
+                    backgroundColor:
+                    const Color(0xFFEDEDED),
                     foregroundColor: Colors.black,
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    padding:
+                    const EdgeInsets.symmetric(
+                        vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius:
+                      BorderRadius.circular(8),
+                    ),
                   ),
-                  onPressed: previewUrl.isEmpty ? null : onPlay,
+                  onPressed:
+                  previewUrl.isEmpty ? null : onPlay,
                   child: const Text('Play'),
                 ),
               ),
@@ -625,14 +788,28 @@ class _ModelTile extends StatelessWidget {
       leading: const CircleAvatar(
         radius: 18,
         backgroundColor: Color(0x0D000000),
-        backgroundImage: AssetImage('assets/images/audion_logo.png'),
+        backgroundImage:
+        AssetImage('assets/images/audion_logo.png'),
       ),
-      title: Text(title, style: const TextStyle(fontSize: 14)),
-      subtitle: Text(subtitle, style: const TextStyle(fontSize: 12, color: Color(0x80000000))),
+      title: Text(
+        title,
+        style: const TextStyle(fontSize: 14),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: const TextStyle(
+          fontSize: 12,
+          color: Color(0x80000000),
+        ),
+      ),
       trailing: Chip(
         label: Text(up),
         backgroundColor: c.withOpacity(.15),
-        labelStyle: TextStyle(color: c, fontSize: 12, fontWeight: FontWeight.w600),
+        labelStyle: TextStyle(
+          color: c,
+          fontSize: 12,
+          fontWeight: FontWeight.w600,
+        ),
         side: BorderSide(color: c.withOpacity(.3)),
       ),
     );

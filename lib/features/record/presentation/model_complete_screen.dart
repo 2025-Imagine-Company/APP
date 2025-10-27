@@ -23,7 +23,7 @@ class _ModelCompleteScreenState extends State<ModelCompleteScreen> {
             ),
             SizedBox(height: 50),
             Image.asset("assets/images/audion_logo_2.png"),
-            SizedBox(height: 40),
+            SizedBox(height: 30),
             TextButton(
               style: TextButton.styleFrom(
                 backgroundColor: Color(0xFFD8D8D8),
@@ -37,42 +37,8 @@ class _ModelCompleteScreenState extends State<ModelCompleteScreen> {
               onPressed: () {
                 Navigator.pushReplacementNamed(context, '/myPage');
               },
-              child: Text(
-                "모델 테스트 하기",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-            ),
-            SizedBox(height: 10),
-            TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Color(0xFFD8D8D8),
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                fixedSize: Size(256, 44),
-              ),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/myPage');
-              },
-              child: Text("판매 등록하러 가기", style: TextStyle(fontSize: 16)),
-            ),
-            SizedBox(height: 10),
-            TextButton(
-              style: TextButton.styleFrom(
-                backgroundColor: Color(0xFFD8D8D8),
-                foregroundColor: Colors.black,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(25),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                fixedSize: Size(256, 44),
-              ),
-              onPressed: () {
-                Navigator.pushReplacementNamed(context, '/myPage');
-              },
-              child: Text("내 라이브러리", style: TextStyle(fontSize: 16)),
+              child:
+              Text("내 라이브러리", style: TextStyle(fontSize: 16)),
             ),
           ],
         ),

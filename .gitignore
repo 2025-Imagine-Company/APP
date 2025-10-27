@@ -6,6 +6,7 @@
 
 # Build outputs
 build/
+dist/
 
 # iOS
 ios/Flutter/ephemeral/
