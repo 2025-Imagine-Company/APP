@@ -81,10 +81,7 @@ class _RecordScreenState extends State<RecordScreen> {
     if (!kIsWeb) {
       final ok = await Permission.microphone.request().isGranted;
       if (!ok) {
-        if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('마이크 권한이 필요합니다.')),
-        );
+        // 권한 거부. 기존 SnackBar 제거. 그냥 반환.
         return;
       }
     }
@@ -121,19 +118,24 @@ class _RecordScreenState extends State<RecordScreen> {
     final ok = kIsWeb ? (_lastBytes != null) : (saved != null);
     if (ok) {
       final filename = _lastFileName ?? (saved?.split('/').last ?? 'voice');
-      final len = kIsWeb ? _lastBytes!.length : (await File(saved!).length());
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('저장됨: $filename (${len}B)')),
-      );
+      final _ = filename; // keep local to avoid unused warning
+
+      final _len = kIsWeb
+          ? _lastBytes!.length
+          : await File(saved!).length(); // not surfaced
+
+      await _player.stop();
       if (kIsWeb) {
-        await _player.stop();
-        await _player.setSource(BytesSource(_lastBytes!));
+        if (_lastBytes != null) {
+          await _player.setSource(BytesSource(_lastBytes!));
+        }
       } else {
-        await _player.setSourceDeviceFile(saved!);
+        if (saved != null) {
+          await _player.setSourceDeviceFile(saved);
+        }
       }
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('저장 실패')));
+      // 저장 실패 SnackBar 제거. 아무 것도 안 함.
     }
   }
 
@@ -142,12 +144,9 @@ class _RecordScreenState extends State<RecordScreen> {
     _timer?.cancel();
     await _pauseRec();
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('스크립트 완료 ⏹=저장, ▶=이어하기')),
-    );
   }
 
-  // 1) 공용 확인 다이얼로그 헬퍼
+  // 공용 확인 다이얼로그 헬퍼
   Future<bool> _confirm({
     required String title,
     required String message,
@@ -155,7 +154,7 @@ class _RecordScreenState extends State<RecordScreen> {
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      useRootNavigator: true, // 루트 네비게이터에 띄우기
+      useRootNavigator: true,
       builder: (dialogContext) => AlertDialog(
         title: Text(title),
         content: Text(message),
@@ -311,31 +310,37 @@ class _RecordScreenState extends State<RecordScreen> {
 
   // ===== 업로드 & 확인 & 모델 생성 확인 =====
   Future<void> _onUploadFlow() async {
-    // 업로드 확인 다이얼로그
     final ok = await _confirm(
       title: '업로드',
       message: '녹음 파일을 서버로 업로드하시겠습니까?',
     );
     if (!ok) return;
 
-    // 업로드 실행
     setState(() => _isUploading = true);
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('업로드 중...')));
+
     try {
       final api = VoiceApi(HttpClient(SecureTokenProvider()));
-      final duration = _dur == Duration.zero ? null : _dur.inMilliseconds / 1000.0;
+      final duration =
+      _dur == Duration.zero ? null : _dur.inMilliseconds / 1000.0;
 
       Map<String, dynamic> resp;
       if (kIsWeb) {
-        if (_lastBytes == null) throw Exception('업로드할 바이트가 없습니다.');
+        if (_lastBytes == null) {
+          throw Exception('업로드할 바이트가 없습니다.');
+        }
         resp = await api.uploadBytes(
           bytes: _lastBytes!,
           filename: _lastFileName ?? 'voice.wav',
           durationSec: duration,
         );
       } else {
-        if (_lastPath == null) throw Exception('업로드할 파일 경로가 없습니다.');
-        resp = await api.upload(file: File(_lastPath!), durationSec: duration);
+        if (_lastPath == null) {
+          throw Exception('업로드할 파일 경로가 없습니다.');
+        }
+        resp = await api.upload(
+          file: File(_lastPath!),
+          durationSec: duration,
+        );
       }
 
       final fileId = resp['fileId'] as String?;
@@ -346,42 +351,39 @@ class _RecordScreenState extends State<RecordScreen> {
       }
 
       // 업로드 직후 확인 호출
-      final detail = await VoiceApi(HttpClient(SecureTokenProvider())).getFile(fileId);
+      final detail =
+      await VoiceApi(HttpClient(SecureTokenProvider())).getFile(fileId);
       final status = (detail['status'] ?? 'UNKNOWN').toString();
-      final fname = (detail['filename'] ?? _lastFileName ?? 'voice').toString();
+      final fname =
+      (detail['filename'] ?? _lastFileName ?? 'voice').toString();
 
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('업로드 확인: $fname ($status)')),
-      );
+      final _s = status; // silence lints
+      final _f = fname;
 
-      // 모델 생성 확인
+      // 모델 생성 확인 다이얼로그
       final goModel = await _confirm(
         title: '모델 생성',
         message: '업로드가 완료되었습니다. 모델을 생성하시겠습니까?',
       );
-      // "모델 생성하시겠습니까?" 확인 시
+
       if (goModel == true && mounted) {
         if (_uploadedFileId == null) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('fileId 없음')));
+          // 예전엔 SnackBar로 알림. 제거. 그냥 리턴.
           return;
         }
         Navigator.pushNamed(
           context,
           '/loading',
           arguments: {
-            'voiceFileId': _uploadedFileId,     // ★ 필수
-            // 선택: 모델 이름을 미리 정하고 싶으면 넣기
+            'voiceFileId': _uploadedFileId,
             'modelName': 'My Voice',
           },
         );
       }
     } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('업로드 실패: $e')),
-      );
+      // 예전엔 SnackBar('업로드 실패: $e'). 제거. 조용히 실패.
+      final _err = e; // silence lints
+      final _ = _err;
     } finally {
       if (mounted) setState(() => _isUploading = false);
     }
@@ -466,7 +468,8 @@ class _RecordScreenState extends State<RecordScreen> {
             Expanded(
               child: Container(
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE9E9E9),
                   borderRadius: BorderRadius.circular(16),
@@ -479,10 +482,20 @@ class _RecordScreenState extends State<RecordScreen> {
                     final isCurrent = i == _idx;
                     final isPast = i < _idx;
                     final style = isCurrent
-                        ? const TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Colors.black)
+                        ? const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black,
+                    )
                         : isPast
-                        ? const TextStyle(fontSize: 14, color: Colors.black54)
-                        : const TextStyle(fontSize: 14, color: Colors.black26);
+                        ? const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black54,
+                    )
+                        : const TextStyle(
+                      fontSize: 14,
+                      color: Colors.black26,
+                    );
                     return SizedBox(
                       height: _rowHeight,
                       child: Center(
@@ -508,19 +521,28 @@ class _RecordScreenState extends State<RecordScreen> {
                   children: [
                     IconButton(
                       tooltip: _isPlaying ? '일시정지' : '재생',
-                      icon: Icon(_isPlaying ? Icons.pause_circle : Icons.play_circle),
+                      icon: Icon(_isPlaying
+                          ? Icons.pause_circle
+                          : Icons.play_circle),
                       iconSize: 36,
                       onPressed: _togglePlayLast,
                     ),
                     Expanded(
                       child: Slider(
                         min: 0,
-                        max: _dur.inMilliseconds.toDouble().clamp(0, double.infinity),
-                        value: _pos.inMilliseconds.clamp(0, _dur.inMilliseconds).toDouble(),
+                        max: _dur.inMilliseconds
+                            .toDouble()
+                            .clamp(0, double.infinity),
+                        value: _pos.inMilliseconds
+                            .clamp(0, _dur.inMilliseconds)
+                            .toDouble(),
                         onChanged: (v) => _seekLast(v),
                       ),
                     ),
-                    Text('${_pos.inSeconds}/${_dur.inSeconds}s', style: const TextStyle(fontSize: 12)),
+                    Text(
+                      '${_pos.inSeconds}/${_dur.inSeconds}s',
+                      style: const TextStyle(fontSize: 12),
+                    ),
                   ],
                 ),
               ),
@@ -556,15 +578,66 @@ class _RecordScreenState extends State<RecordScreen> {
             const SizedBox(height: 16),
 
             // 업로드 버튼
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: (isStopped && hasResult && !_isUploading) ? _onUploadFlow : null,
-                icon: const Icon(Icons.cloud_upload_outlined),
-                label: Text(_isUploading ? '업로드 중...' : '업로드'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SizedBox(
+                height: 56,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                      if (_isUploading) return Colors.black87;
+                      if (states.contains(WidgetState.disabled)) {
+                        return const Color(0xFFCCCCCC); // 비활성 회색
+                      }
+                      return Colors.black; // 기본 검정
+                    }),
+                    shape: WidgetStateProperty.all(
+                      RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(28), // pill
+                      ),
+                    ),
+                    elevation: WidgetStateProperty.all(0),
+                    foregroundColor: WidgetStateProperty.all(Colors.white),
+                    overlayColor: WidgetStateProperty.all(Colors.white12),
+                  ),
+                  onPressed: (isStopped && hasResult && !_isUploading)
+                      ? _onUploadFlow
+                      : null,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (_isUploading)
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      else
+                        const Icon(
+                          Icons.cloud_upload_outlined,
+                          color: Colors.white,
+                          size: 24,
+                        ),
+                      const SizedBox(width: 8),
+                      Text(
+                        _isUploading ? '업로드 중...' : '업로드',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: -0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 8),
+
           ],
         ),
       ),
@@ -574,9 +647,9 @@ class _RecordScreenState extends State<RecordScreen> {
 
 // 데모 문장
 const _mockLines = <String>[
-  '마이크 테스트를 시작합니다.',
-  '지금은 예시 문장입니다.',
-  '녹음과 자막 싱크를 확인하세요.',
-  '일시정지 후 재개도 점검합니다.',
-  '마지막 줄입니다.',
+  '안녕하세요.',
+  '목소리 테스트를 시작합니다.',
+  '하나, 둘, 셋, 넷.',
+  '잘 녹음되고 있나요?',
+  '테스트가 끝났습니다.',
 ];

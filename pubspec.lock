@@ -556,10 +556,10 @@ packages:
     dependency: transitive
     description:
       name: meta
-      sha256: e3641ec5d63ebf0d9b41bd43201a66e3fc79a65db5f61fc181f04cd27aab950c
+      sha256: "23f08335362185a5ea2ad3a4e597f1375e78bce8a040df5c600c8d3552ef2394"
       url: "https://pub.dev"
     source: hosted
-    version: "1.16.0"
+    version: "1.17.0"
   mime:
     dependency: transitive
     description:
@@ -652,10 +652,10 @@ packages:
     dependency: transitive
     description:
       name: path_provider_foundation
-      sha256: "16eef174aacb07e09c351502740fa6254c165757638eba1e9116b0a781201bbd"
+      sha256: efaec349ddfc181528345c56f8eda9d6cccd71c177511b132c6a0ddaefaa2738
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.2"
+    version: "2.4.3"
   path_provider_linux:
     dependency: transitive
     description:
@@ -812,10 +812,10 @@ packages:
     dependency: transitive
     description:
       name: record_android
-      sha256: f05677eeed074898327f890f232f9eb49cd99d1c20d0daaf22b5612f4b2301bb
+      sha256: fb54ee4e28f6829b8c580252a9ef49d9c549cfd263b0660ad7eeac0908658e9f
       url: "https://pub.dev"
     source: hosted
-    version: "1.4.3"
+    version: "1.4.4"
   record_ios:
     dependency: transitive
     description:
@@ -868,10 +868,10 @@ packages:
     dependency: "direct main"
     description:
       name: reown_appkit
-      sha256: "7538471537a1307488d5210ee0e0d9df44a0c0cc05a7ed576cf5afb6bede3cef"
+      sha256: cf9f3308e459d277c2e009c8af0eb3a45f1b26c6e3bca85faab04f9059b80ec0
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.2"
+    version: "1.7.0"
   reown_core:
     dependency: transitive
     description:
@@ -884,10 +884,10 @@ packages:
     dependency: transitive
     description:
       name: reown_sign
-      sha256: d89e2e8c51d992e145c3db7727d522955d084c13c9bb72ab94cee209982e162d
+      sha256: "21b9e4e49498f35cd1b3a020b49f38c00b44cb7febc62f9b8df420f9686bdccf"
       url: "https://pub.dev"
     source: hosted
-    version: "1.3.3"
+    version: "1.3.4"
   rxdart:
     dependency: transitive
     description:
@@ -924,10 +924,10 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_foundation
-      sha256: "6a52cfcdaeac77cad8c97b539ff688ccfc458c007b4db12be584fbe5c0e49e03"
+      sha256: "1c33a907142607c40a7542768ec9badfd16293bac51da3a4482623d15845f88b"
       url: "https://pub.dev"
     source: hosted
-    version: "2.5.4"
+    version: "2.5.5"
   shared_preferences_linux:
     dependency: transitive
     description:
@@ -1081,10 +1081,10 @@ packages:
     dependency: transitive
     description:
       name: test_api
-      sha256: "522f00f556e73044315fa4585ec3270f1808a4b186c936e612cab0b565ff1e00"
+      sha256: ab2726c1a94d3176a45960b6234466ec367179b87dd74f1611adb1f3b5fb9d55
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.6"
+    version: "0.7.7"
   typed_data:
     dependency: transitive
     description:
@@ -1113,10 +1113,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_ios
-      sha256: d80b3f567a617cb923546034cc94bfe44eb15f989fe670b37f26abdb9d939cb7
+      sha256: "6b63f1441e4f653ae799166a72b50b1767321ecc263a57aadf825a7a2a5477d9"
       url: "https://pub.dev"
     source: hosted
-    version: "6.3.4"
+    version: "6.3.5"
   url_launcher_linux:
     dependency: transitive
     description:
@@ -1129,10 +1129,10 @@ packages:
     dependency: transitive
     description:
       name: url_launcher_macos
-      sha256: c043a77d6600ac9c38300567f33ef12b0ef4f4783a2c1f00231d2b1941fea13f
+      sha256: "8262208506252a3ed4ff5c0dc1e973d2c0e0ef337d0a074d35634da5d44397c9"
       url: "https://pub.dev"
     source: hosted
-    version: "3.2.3"
+    version: "3.2.4"
   url_launcher_platform_interface:
     dependency: transitive
     description:

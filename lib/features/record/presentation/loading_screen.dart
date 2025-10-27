@@ -1,7 +1,6 @@
 // lib/features/voice/presentation/loading_screen.dart
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import 'package:dio/dio.dart';
 
 import 'package:app/core/services/http_client.dart';
@@ -23,19 +22,6 @@ ModelStatus parseModelStatus(String? s) {
   }
 }
 
-String statusLabel(ModelStatus s) {
-  switch (s) {
-    case ModelStatus.training:
-      return '학습 중 (TRAINING)';
-    case ModelStatus.done:
-      return '완료 (DONE)';
-    case ModelStatus.error:
-      return '실패 (ERROR)';
-    case ModelStatus.unknown:
-      return '알 수 없음';
-  }
-}
-
 class LoadingScreen extends StatefulWidget {
   const LoadingScreen({Key? key}) : super(key: key);
 
@@ -51,8 +37,6 @@ class _LoadingScreenState extends State<LoadingScreen>
 
   String? _voiceFileId;
   String? _modelId;
-  ModelStatus _status = ModelStatus.unknown;
-  bool _creating = false;
 
   // 폴링 제어
   bool _isPolling = false;
@@ -63,7 +47,7 @@ class _LoadingScreenState extends State<LoadingScreen>
     super.initState();
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 5),
+      duration: const Duration(seconds: 2),
     )..repeat();
 
     WidgetsBinding.instance.addPostFrameCallback((_) => _startFlow());
@@ -84,31 +68,21 @@ class _LoadingScreenState extends State<LoadingScreen>
       return;
     }
 
-    // 1) 모델 생성(1회)
     try {
-      setState(() {
-        _creating = true;
-        _status = ModelStatus.training; // 생성 시작 → 학습 중으로 표시
-      });
       final created = await _api.createModel(
         voiceFileId: _voiceFileId!,
         modelName: modelName,
       );
       _modelId = (created['modelId'] ?? created['id'])?.toString();
-      if (_modelId == null) {
-        throw Exception('modelId가 응답에 없습니다.');
-      }
+      if (_modelId == null) throw Exception('modelId가 응답에 없습니다.');
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text('모델 생성 실패: $e')));
       Navigator.pop(context);
       return;
-    } finally {
-      if (mounted) setState(() => _creating = false);
     }
 
-    // 2) 5초 간격 폴링 (첫 조회 5초 지연)
     _pollLoop();
   }
 
@@ -127,8 +101,6 @@ class _LoadingScreenState extends State<LoadingScreen>
     try {
       final res = await _api.getModel(_modelId!);
       final status = parseModelStatus(res['status'] as String?);
-      if (!mounted) return;
-      setState(() => _status = status);
 
       if (status == ModelStatus.done) {
         _done = true;
@@ -138,12 +110,11 @@ class _LoadingScreenState extends State<LoadingScreen>
         _done = true;
         final msg = (res['errorMessage'] ?? '모델 학습에 실패했습니다.').toString();
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(msg)));
         Navigator.pop(context);
       }
-      // TRAINING/UNKNOWN → 다음 루프에서 재확인
     } on DioException catch (e) {
-      // 서버 준비 중일 때 404/500은 조용히 재시도
       final code = e.response?.statusCode ?? 0;
       if (code != 404 && code != 500) {
         if (!mounted) return;
@@ -162,33 +133,51 @@ class _LoadingScreenState extends State<LoadingScreen>
 
   @override
   void dispose() {
-    _done = true; // 루프 종료
+    _done = true;
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final percent = _controller.value; // 단순 애니메이션
+    final screenW = MediaQuery.of(context).size.width;
+    final loaderSize = screenW * 0.8 > 320 ? 320.0 : screenW * 0.8;
+    final ringWidth = loaderSize * 0.08;
+    final centerIconSize = loaderSize * 0.4;
 
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularPercentIndicator(
-              radius: 100.0,
-              lineWidth: 20.0,
-              percent: percent,
-              progressColor: Colors.red,
-              backgroundColor: Colors.red.shade100,
-              circularStrokeCap: CircularStrokeCap.butt,
-              center: Image.asset('assets/images/graphic_eq.png'),
+            SizedBox(
+              width: loaderSize,
+              height: loaderSize,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  RotationTransition(
+                    turns: _controller,
+                    child: CustomPaint(
+                      size: Size(loaderSize, loaderSize),
+                      painter: _RingPainter(
+                        strokeWidth: ringWidth,
+                        color: Colors.red,
+                        trailColor: Colors.red.shade100,
+                      ),
+                    ),
+                  ),
+                  Image.asset(
+                    'assets/images/graphic_eq.png',
+                    width: centerIconSize,
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 60),
             RichText(
               textAlign: TextAlign.center,
-              text: const TextSpan(
+              text: TextSpan(
                 style: TextStyle(
                   fontSize: 20,
                   color: Colors.black,
@@ -197,21 +186,71 @@ class _LoadingScreenState extends State<LoadingScreen>
                 ),
                 children: [
                   TextSpan(text: '잠시만 기다려주세요\n'),
-                  TextSpan(text: 'AI', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(
+                    text: 'AI',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextSpan(text: '가 '),
-                  TextSpan(text: '녹음된 음성', style: TextStyle(fontWeight: FontWeight.bold)),
+                  TextSpan(
+                    text: '녹음된 음성',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
                   TextSpan(text: '을 학습 중 입니다'),
                 ],
               ),
-            ),
-            const SizedBox(height: 24),
-            Text(
-              _creating ? '모델 생성 중...' : '상태: ${statusLabel(_status)}',
-              style: const TextStyle(fontSize: 14, color: Colors.black54),
             ),
           ],
         ),
       ),
     );
   }
+}
+
+class _RingPainter extends CustomPainter {
+  _RingPainter({
+    required this.strokeWidth,
+    required this.color,
+    required this.trailColor,
+  });
+
+  final double strokeWidth;
+  final Color color;
+  final Color trailColor;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final radius = (size.shortestSide / 2) - strokeWidth / 2;
+    final center = Offset(size.width / 2, size.height / 2);
+
+    final trailPaint = Paint()
+      ..color = trailColor
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    final activePaint = Paint()
+      ..color = color
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = strokeWidth
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0,
+      2 * 3.1415926535,
+      false,
+      trailPaint,
+    );
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      0,
+      3.1415926535 / 2,
+      false,
+      activePaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
